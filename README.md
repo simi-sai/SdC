@@ -1,2 +1,7 @@
-# SdC
-Repositorio compartido para el desarrollo de Trabajos Practicos de Sistemas de Computación. FCEFyN - UNC
+# Sistemas de Computación
+
+## Grupo: `Breaking Bytes`
+
+- Saillen, Simón.
+- Vargas, Rodrigo Sebastian.
+- Zuñiga, Ruben.
