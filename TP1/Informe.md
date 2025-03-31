@@ -292,7 +292,7 @@ Esta herramienta es interesante ya que permite, entre otras cosas, ver en codigo
 
 Para la realización de esta parte generamos el siguiente código en Arduino que utilizamos en una **ESP32 Devkit V1**.
 
-```arduino
+```c++
 //  Available CPU clock frequency values:
 //  240, 160, 80    <<< For all XTAL types
 //  40, 20, 10      <<< For 40MHz XTAL
