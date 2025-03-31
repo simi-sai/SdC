@@ -379,5 +379,6 @@ Como se puede observar, el tiempo de programa se reduce a la mitad cuando la fre
 
 ## Conclusiones
 
-Este informe ha logrado aplicar los conocimientos teóricos sobre el rendimiento y la eficiencia de sistemas computacionales a través de una investigación de benchmarks que evalúan distintos recursos del hardware, según las actividades que se realizan con más frecuencia por los integrantes del grupo. Además de una comparación del rendimiento de algunos procesadores gracias a la observación de estos benchmarks.
+En este informe se ha logrado aplicar los conocimientos teóricos sobre el rendimiento y la eficiencia de sistemas computacionales a través de una investigación de benchmarks que evalúan distintos recursos del hardware, según las actividades que se realizan con más frecuencia por los integrantes del grupo. Además de una comparación del rendimiento de algunos procesadores gracias a la observación de estos benchmarks.
+
 Por otro lado, se obtuvo una mejor comprensión del rendimiento realizando un análisis de time profiling sobre un código propio y se experimentó con una ESP32, midiendo el tiempo de ejecucion de un programa embebido en éste, concluyendo que el tiempo de ejecucion es inversamente proporcional a la frecuencia del CPU, y por lo tanto, una mayor frecuencia permite un mejor rendimiento.
