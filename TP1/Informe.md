@@ -1,5 +1,11 @@
 # Trabajo Práctico N°1
 
+### `Breaking Bytes`
+
+- SAILLEN, Simón.
+- VARGAS, Rodrigo Sebastian.
+- ZÚÑIGA, Guillermo Rubén Darío.
+
 ## Introducción
 
 El objetivo de este informe es aplicar los conocimientos adquiridos sobre el rendimiento y la performance de los sistemas computacionales, con el fin de tomar decisiones informadas sobre el hardware y optimizar el código. 
@@ -41,7 +47,7 @@ Esta tarea se divide en tres partes: la primera consiste en utilizar benchmarks 
 
 El rendimiento de un sistema se mide por su capacidad para completar una tarea en un tiempo determinado. Utilizando los tiempos de ejecución, podemos calcular el rendimiento absoluto:
 
-$$ \text{Rendimiento} = \frac{1}{T} $$
+$$\text{Rendimiento} = \frac{1}{T}$$
 
 La siguiente tabla muestra los tiempos y rendimientos de los procesadores:
 
@@ -53,15 +59,15 @@ La siguiente tabla muestra los tiempos y rendimientos de los procesadores:
 
 Para calcular la aceleración del **AMD Ryzen 9 7950X 16-Core**, usamos la fórmula de **Speedup**:
 
-$$ \text{Speedup} = \frac{T\cdot \text{base}}{T\cdot\text{Ryzen 9 7950X}} $$
+$$\text{Speedup} = \frac{T\cdot \text{base}}{T\cdot\text{Ryzen 9 7950X}}$$
 
 ##### Comparación con Intel Core i5-13600K:
 
-$$ \text{Speedup} = \frac{83}{53} = 1.566 $$
+$$\text{Speedup} = \frac{83}{53} = 1.566$$
 
 ##### Comparación con AMD Ryzen 9 5900X:
 
-$$ \text{Speedup} = \frac{97}{53} = 1.830 $$
+$$\text{Speedup} = \frac{97}{53} = 1.830$$
 
 ##### Aceleracion al usar AMD Ryzen 9 7950X 16-Core
 
