@@ -59,7 +59,7 @@ La siguiente tabla muestra los tiempos y rendimientos de los procesadores:
 
 Para calcular la aceleración del **AMD Ryzen 9 7950X 16-Core**, usamos la fórmula de **Speedup**:
 
-$$\text{Speedup} = \frac{T\cdot \text{base}}{T\cdot\text{Ryzen 9 7950X}}$$
+$$\text{Speedup} = \frac{T_{\text{base}}}{T_{\text{Ryzen 9 7950X}}}$$
 
 ##### Comparación con Intel Core i5-13600K:
 
