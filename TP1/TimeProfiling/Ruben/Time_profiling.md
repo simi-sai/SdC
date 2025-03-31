@@ -23,6 +23,10 @@ Se personalizó el archivo con distintos comandos.
 ![gprof -p -b](img/tp1_09.png)
 ![gprof -pfun1 -b](img/tp1_10.png)
 
+Para ver un gráfico de la salida de gprof, se utilizó gprof2dot que genera una imagen .png del mismo.
+![Generacion del grafico](img/tp1_14.png)
+![Grafico del perfil](img/profile.png)
+
 ## Herramienta Perf
 Para este caso, se realizó el perfil del programa con Linux Perf.
 ![Ejecucion del perfil](img/tp1_11.png)
