@@ -16,15 +16,15 @@ for i_country in data[1]:
     if i_country['country']['value'] == country:
         if i_country['date'] == year:
             # print(i_country)
-            gini_val = i_country['value']
+            gini_val = int(i_country['value'])
             print("Gini actual: ",gini_val)
 
 # Load C library
 lib_send_gini = ctypes.CDLL('./lib_send_gini.so')
     
 # Set argument and return types
-lib_send_gini._gini.argtypes = (ctypes.c_double,)
-lib_send_gini._gini.restype = ctypes.c_double
+lib_send_gini._gini.argtypes = (ctypes.c_int,)
+lib_send_gini._gini.restype = ctypes.c_int
 
 # Define python function
 def send_gini(num):
