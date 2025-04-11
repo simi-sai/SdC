@@ -21,7 +21,7 @@ for i_country in data[1]:
 
 # Load C library
 lib_send_gini = ctypes.CDLL('./lib_send_gini.so')
-
+    
 # Set argument and return types
 lib_send_gini._gini.argtypes = (ctypes.c_double,)
 lib_send_gini._gini.restype = ctypes.c_double
