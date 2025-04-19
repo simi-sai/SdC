@@ -4,7 +4,7 @@
 
 - Saillen, Simón.
 - Vargas, Rodrigo Sebastian.
-- Zuñiga, Ruben.
+- Zúñiga, Guillermo Rubén Darío.
 
 ## Docentes
 
