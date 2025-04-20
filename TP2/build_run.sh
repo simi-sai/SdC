@@ -1,5 +1,20 @@
 #!/bin/bash
 
+# Dependency installation
+sudo dpkg --add-architecture i386
+sudo apt update
+sudo apt install libz1:i386
+sudo apt install libc6:i386 gcc-multilib g++-multilib
+sudo apt install nasm build-essential
+
+# Virtual environment setup
+python3 -m venv venv
+. venv/bin/activate
+pip install requests
+pip install msl-loadlib
+echo ""
+echo "Instalación de dependencias completada"
+
 set -e  # Exit on first error
 
 # Cleaning previous builds
