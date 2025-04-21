@@ -230,7 +230,7 @@ class MyServer(Server32):
 
 Y ultimamente agregamos un script para la instalación de dependencias, creacion de entorno, compilación y ejecución del código:
 
-```shell
+```sh
 # build_run.sh
 
 # Dependency installation
@@ -271,7 +271,7 @@ python3 asm_worldbank.py
 
 Para realizar esta parte, utilizaremos los codigos correspondientes a la **2° Iteración**, o sea solo usaremos un codigo puro en C junto a Assembly.
 
-```shell
+```bash
 nasm -f elf -d ELF_TYPE -g asm_io.asm -o asm_io.o
 nasm -f elf -d ELF_TYPE -g asm_gini.asm -o asm_gini.o
 gcc -m32 -c -g old_send_gini.c -o old_send_gini.o
@@ -280,13 +280,13 @@ gcc -m32 asm_io.o asm_gini.o old_send_gini.o -o gini_executable -g
 
 Prueba de funcionamiento:
 
-```shell
+```console
 ./gini_executable
 11
 ```
 Print de ejecución del debugger GDB:
 
-```shell
+```gdb
 Reading symbols from gini_executable...
 (gdb) break _gini
 Breakpoint 1 at 0x14db: file old_send_gini.c, line 6.
