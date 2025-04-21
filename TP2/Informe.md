@@ -8,13 +8,13 @@
 
 ## Introducción
 
-Se diseñó e implementó una interfaz que adquiere el índice GINI de un país, realizando una consulta a la base de datos del banco mundial (https://api.worldbank.org/v2/en/country/all/indicator/SI.POV.GINI?format=json&date=2011:2020&per_page=32500&page=1&country=%22Argentina%22), y realiza un cálculo matemático utilizando éste índice. La interfaz consiste de tres capas: una superior realizada en Python que recupera el indice GINI, una intermedia que realiza una conversion de tipo de dato y una inferior que realiza la suma. Las capas se comunican entre si mediante el stack.
+Se diseñó e implementó una interfaz que adquiere el índice GINI de un país, realizando una consulta a la base de datos del banco mundial (https://api.worldbank.org/v2/en/country/all/indicator/SI.POV.GINI?format=json&date=2011:2020&per_page=32500&page=1&country=%22Argentina%22), y ejecutando un cálculo matemático utilizando éste índice. La interfaz consiste de tres capas: una superior realizada en Python que recupera el indice GINI, una intermedia que realiza una conversion de tipo de dato y una inferior que realiza la suma. Las capas se comunican entre si mediante el stack.
 
 ## Desarrollo
 
 ### 1° Iteración: Uso de Python y C
 
-En este primer caso se realizo la suma del índice en C sin Ensamblador. El índice es convertido a entero en Python y luego es sumado en C.
+En este primer caso se realizó la suma del índice en C sin Ensamblador. El índice es convertido a entero en Python y luego es sumado en C.
 
 Para esto se utilizó la librería `requests` para enviar solicitudes HTTP a la página del banco mundial, y `ctypes` para que Python pueda llamar a una función de una librería compartida de C.
 
@@ -122,7 +122,7 @@ asm_main:
 
 ### 3° Iteración: Stack Frame Completo (Python - C - Assembly)
 
-En esta etapa nos enfocamos en lograr unir y comunicar todas las capas. Sin embargo nos encontramos con un problema en el camino, al utilizar `Assembly x86` había una incompatibilidad con `Python` ya que utiliza un interpretador de `x64`, para solucionar esto utilizamos la librería `msl-loadlib`, que permite cargar una librería compartida de 32bits en el interpreter de 64bits en Python.
+Esta etapa estuvo enfocada en lograr unir y comunicar todas las capas. Sin embargo se encontró un problema en el camino: al utilizar `Assembly x86` había una incompatibilidad con `Python` ya que utiliza un interpretador de `x64`, para solucionar esto se utilizó la librería `msl-loadlib`, que permite cargar una librería compartida de 32bits en el interpreter de 64bits en Python.
 
 ```Python
 # asm_worldbank.py
@@ -228,7 +228,7 @@ class MyServer(Server32):
         return self.lib._gini(a)
 ```
 
-Y ultimamente agregamos un script para la instalación de dependencias, creacion de entorno, compilación y ejecución del código:
+Y ultimamente se agregó un script para la instalación de dependencias, creacion de entorno, compilación y ejecución del código:
 
 ```sh
 # build_run.sh
@@ -269,7 +269,7 @@ python3 asm_worldbank.py
 
 ### Debugging con GDB
 
-Para realizar esta parte, utilizaremos los codigos correspondientes a la **2° Iteración**, o sea solo usaremos un codigo puro en C junto a Assembly.
+Para realizar esta parte, se utilizaron los codigos correspondientes a la **2° Iteración**, es decir que solo se usó un codigo puro en C junto a Assembly.
 
 ```bash
 nasm -f elf -d ELF_TYPE -g asm_io.asm -o asm_io.o
@@ -336,15 +336,15 @@ $2 = 11
 
 #### Conclusión de la Sesión de Depuración con GDB:
 
-1. **Stepping y Ejecución de Instrucciones Assembly:** Una vez dentro de `asm_main`, pudimos usar `stepi` (`si`) para ejecutar las instrucciones Assembly una por una (`enter`, `mov`, `inc`).
+1. **Stepping y Ejecución de Instrucciones Assembly:** Una vez dentro de `asm_main`, se pudo usar `stepi` (`si`) para ejecutar las instrucciones Assembly una por una (`enter`, `mov`, `inc`).
 
 2. **Demostración del Stack Frame y Acceso a Argumentos (con una observación):**
 
-   - **Antes de la llamada a `asm_main`(en `_gini`):** Los registros `ESP` (`0xffffcde0`) y EBP (`0xffffcdf8`) muestran el estado del stack frame de la función `_gini`.
-   - Dentro de `asm_main` (después de `enter`): Los registros `ESP` y `EBP` ahora apuntan a `0xffffcdc8`. Esto es consistente con la instrucción `enter 0,0`, que guarda el EBP anterior en la pila y hace que el nuevo EBP apunte allí (`mov ebp, esp`), y como no hay variables locales, ESP también permanece en esa posición (`sub esp, 0`). El valor `0xffffcdf8` (el EBP guardado de `_gini`) parece estar ubicado en la pila en la dirección `0xffffcdcc` (`[ebp+4]` relativo al nuevo `EBP` `0xffffcdc8`), no directamente en [ebp] como podría esperarse, pero aún parte del setup del stack frame.
-   - **Ubicación del Argumento:** Al examinar la memoria alrededor del nuevo `EBP` `(0xffffcdc8)` con `x/10wx $ebp-8`, vemos el valor `0x0000000a` (que es decimal 10, el valor de `gini_val`) ubicado en la dirección `0xffffcdd4`. Relativo a `EBP` `(0xffffcdc8)`, esta dirección es `[ebp+12]`. Esto demuestra que el argumento gini_val se encuentra efectivamente en la pila y es accesible mediante un desplazamiento positivo desde el registro `EBP` (`[ebp+12]` en este entorno de ejecución específico).
-   - **Discrepancia Observada:** Nuestro código Assembly fuente dice `mov eax,[ebp+8]`. Sin embargo, la traza de GDB muestra que el valor 10 está en `[ebp+12]`, y el hecho de que `EAX` termine siendo 11 después de `inc eax` prueba que el valor cargado en `EAX` fue 10. Esto sugiere que, o bien la línea `mov eax,[ebp+8]` en la traza corresponde a la línea de código Assembly que realmente accede al argumento (y por alguna razón el desplazamiento es efectivamente +12 en el binario compilado a pesar de lo que dice la línea fuente mostrada por GDB), o hay alguna sutileza en el stack frame setup que coloca el argumento en `[ebp+12]` en lugar del típico `[ebp+8]`. A pesar de esta pequeña discrepancia en el desplazamiento exacto entre la fuente y la ubicación real observada **(+8 vs +12)**, la demostración fundamental de que el argumento está en la pila y es accedido vía `EBP` sigue siendo válida.
+   - **Antes de la llamada a `asm_main`(en `_gini`):** Los registros `ESP` (`0xffffcde0`) y `EBP` (`0xffffcdf8`) muestran el estado del stack frame de la función `_gini`.
+   - Dentro de `asm_main` (después de `enter`): Los registros `ESP` y `EBP` ahora apuntan a `0xffffcdc8`. Esto es consistente con la instrucción `enter 0,0`, que guarda el EBP anterior en la pila y hace que el nuevo EBP apunte allí (`mov ebp, esp`), y como no hay variables locales, ESP también permanece en esa posición (`sub esp, 0`). El valor `0xffffcdf8` (el EBP guardado de `_gini`) parece estar ubicado en la pila en la dirección `0xffffcdc8`, es decir, directamente en [ebp] como podría esperarse.
+   - **Ubicación del Argumento:** Al examinar la memoria alrededor del nuevo `EBP` `(0xffffcdc8)` con `x/10wx $ebp-8`, vemos el valor `0x0000000a` (que es decimal 10, el valor de `gini_val`) ubicado en la dirección `0xffffcdd0`. Relativo a `EBP` `(0xffffcdc8)`, esta dirección es `[ebp+8]`. Esto demuestra que el argumento gini_val se encuentra efectivamente en la pila y es accesible mediante un desplazamiento positivo desde este registro.
 
 3. **Manejo del Valor de Retorno:** Después de ejecutar `inc eax`, el registro `EAX` contiene 11, como se verifica con `print $eax`. La instrucción `leave` limpia el stack frame de `asm_main`, y `ret` utiliza la dirección de retorno guardada para volver al código C. GDB se detiene en la línea siguiente en C, y `print $eax` nuevamente confirma que el valor de retorno 11 está disponible en `EAX`, listo para ser usado por el código C.
 
 ## Conclusión
+La implementación de este programa permitió analizar el comportamiento del stack frame y su estructura en el momento del llamado a un subprograma, validando la teoría estudiada en el curso. Además, para la ejecución del diseño, se adquirió el conocimiento sobre el manejo de herramientas para lograr el acceso de librerías de 32 bits en un interpretador de 64 bits (Python en este caso) y la integración de múltiples capas de abstracción, logrando habilidades prácticas en la solución de incompatibilidades de sistema.
