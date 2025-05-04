@@ -88,6 +88,12 @@ ld --oformat binary -o main.img -T link.ld main.o
 qemu-system-x86_64 -hda main.img
 ```
 
+La opción `-g` en el comando `as` genera información de depuración, que puede ser útil para el análisis posterior. La opción `--oformat binary` en el comando `ld` indica que se debe generar un archivo binario plano, que es el formato esperado por QEMU.
+
+La opción `-T` en el comando `ld` especifica el script de enlazador a utilizar. En este caso, se utiliza el script `link.ld`, que define la estructura del archivo ejecutable.
+
+La opción `-hda` en el comando `qemu-system-x86_64` especifica el archivo de imagen a utilizar como disco duro virtual. En este caso, se utiliza el archivo `main.img`, que contiene el bootloader.
+
 !["Ejecución del programa"](./Imagenes/qemu-hello-world.png)
 
 ##### Salida de `objdump`
@@ -106,3 +112,11 @@ Muestra los bytes crudos del archivo desde el offset `0`. Confirma la secuencia 
 >Ambas salidas se encuentran completas sus en respectivos archivos de texto. La salida de `objdump` se encuentra en `Archivos/objdump.txt` y la salida de `hd` se encuentra en `Archivos/hexdump.txt`.
 
 La coincidencia de bytes entre ambas herramientas y la revelación de la cadena de texto por `hd` confirman que el programa **(código + datos)** está colocado al inicio del archivo `main.img` (offset `0`). Ambas salidas muestran que el archivo tiene `512 bytes` y termina con la firma de arranque `55 aa`.
+
+#### Debuggeando con GDB y QEMU
+
+Para depurar el programa, se utiliza GDB junto con QEMU. Esto permite inspeccionar el estado del programa en ejecución, incluyendo los registros y la memoria.
+
+```bash
+qemu-system-i386 -drive format=raw,file=./Archivos/01HelloWorld/main.img -boot a -s -S -monitor stdio
+```
