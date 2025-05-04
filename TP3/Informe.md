@@ -1,4 +1,4 @@
-# Trabajo Práctico N°3: Protected Mode
+# Trabajo Práctico N°3: Modo Protegido
 
 ### `Breaking Bytes`
 
@@ -87,3 +87,22 @@ as -g -o main.o main.S
 ld --oformat binary -o main.img -T link.ld main.o
 qemu-system-x86_64 -hda main.img
 ```
+
+!["Ejecución del programa"](./Imagenes/qemu-hello-world.png)
+
+##### Salida de `objdump`
+
+Muestra el desensamblado del archivo main.img interpretándolo como código i8086 desde el offset 0. Identifica las instrucciones iniciales (`mov`,  `lods`, `int`, `hlt`). Luego objdump continúa desensamblando más allá de `hlt` (offset `0xe`), tratando los siguientes bytes como código.
+
+!["Objdump"](./Imagenes/objdump.png)
+
+##### Salida de `hd`
+
+Muestra los bytes crudos del archivo desde el offset `0`. Confirma la secuencia de bytes vista por `objdump` (`be 0f 7c...`). Crucialmente, su vista ASCII revela la cadena `"hello world"` exactamente en los bytes que siguen a la instrucción `hlt`.
+
+!["Hexdump"](./Imagenes/hexdump.png)
+
+>[!NOTE]
+>Ambas salidas se encuentran completas sus en respectivos archivos de texto. La salida de `objdump` se encuentra en `Archivos/objdump.txt` y la salida de `hd` se encuentra en `Archivos/hexdump.txt`.
+
+La coincidencia de bytes entre ambas herramientas y la revelación de la cadena de texto por `hd` confirman que el programa **(código + datos)** está colocado al inicio del archivo `main.img` (offset `0`). Ambas salidas muestran que el archivo tiene `512 bytes` y termina con la firma de arranque `55 aa`.
