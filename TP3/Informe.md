@@ -183,6 +183,21 @@ qemu-system-i386 -drive format=raw,file=./Archivos/01HelloWorld/main.img -boot a
 Pasos seguidos:
 
 1. Se inicia QEMU en una terminal utilizando el codigo anterior.
-2. Se abre otra terminal y se inicia GDB con el siguiente comando:
-```bash
-gdb
+![QEMU](./Imagenes/qemu-gdb-start.png)
+1. Se abre otra terminal y se inicia GDB.
+2. Se le indica a GDB que se conecte al servidor de depuración de QEMU utilizando el comando `target remote localhost:1234`.
+3. Se configura el entorno de depuración utilizando el comando `set architecture i8086`.
+4. Se set el punto de interrupción en la dirección de inicio del programa utilizando el comando `b *0x7c00`.
+![GDB-QEMU](./Imagenes/qemu-0x7c00.png)
+5. Se inicia la ejecución del programa utilizando el comando `c`.
+6. Una vez alcanzado el breakpoint, se observan las siguientes 10 instrucciones utilizando el comando `x/10i $eip`. Y se setea el segundo breakpoint en la dirección de la instrucción siguiente a la interrupción (`jmp 0x7c05` en `0x7c0c`).
+![GDB-BREAK2](./Imagenes/gdb-break2.png)
+7. Se continúa la ejecución del programa utilizando el comando `c`.
+8. Se observa que el programa se detiene luego de escribir una letra en la pantalla. Esto se debe a que la instrucción `int 0x10` es una llamada a la interrupción de BIOS que imprime el carácter en el registro `al` en la pantalla.
+![GDB-HELLO](./Imagenes/gdb-hello.png)
+9. Si repetimos varias veces el paso 7, se puede observar que el programa sigue ejecutándose y escribiendo letras en la pantalla.
+![GDB-HELLO2](./Imagenes/gdb-hello2.png)
+10. Repetimos el paso 7 hasta completar la cadena de texto "hello world". Hasta que ya que no hay más caracteres para imprimir.
+![GDB-HELLO3](./Imagenes/qemu-hello-world-3.png)
+
+### Modo Protegido
