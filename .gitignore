@@ -5,3 +5,4 @@ __pycache__
 *.o
 *.so
 *.inc
+TP3/protected-mode-sdc/*
