@@ -8,6 +8,10 @@
 
 ## Introducción
 
+El objetivo de este trabajo práctico es comprender el funcionamiento del modo protegido de la arquitectura x86, así como también el funcionamiento del bootloader y el proceso de arranque de un sistema operativo.
+
+El trabajo se divide en tres partes: UEFI/Coreboot, el uso de un enlazador (linker) y la creación de un programa en modo protegido.
+
 ## Desarrollo
 
 ### UEFI / Coreboot
@@ -77,6 +81,8 @@ Hoy en dia es incorporado por las computadoras ThinkPad, Chromebook, Purism, Sys
 
 Su ventaja no reside en una necesidad tecnológica, sino en una ética, ya que para los desarrolladores de este proyecto es importante que todo el software del PC sea libre, y el BIOS ha sido el único que ha quedado olvidado. Los autores esperan que en los próximos años algunos fabricantes estén dispuestos a distribuirlo en sus máquinas, debido a su carácter gratuito.
 
+---
+
 ### Linker
 
 Un enlazador (linker) es una herramienta esencial en el proceso de compilación de un programa. Permite combinar varios modulos objeto en un solo archivo ejecutable que puede correr en un sistema.
@@ -89,7 +95,7 @@ Un script de enlazador es un archivo de texto que contiene instrucciones para el
 
 El linker Script a utilizar en este trabajo es el siguiente:
 
-```Linker Script
+```linkerscript
 SECTIONS
 {
     . = 0x7c00;
@@ -202,5 +208,7 @@ Pasos seguidos:
 ![GDB-HELLO2](./Imagenes/gdb-hello-2.png)
 10. Repetimos el paso 7 hasta completar la cadena de texto "hello world". Hasta que ya que no hay más caracteres para imprimir.
 ![GDB-HELLO3](./Imagenes/qemu-hello-world-3.png)
+
+---
 
 ### Modo Protegido
