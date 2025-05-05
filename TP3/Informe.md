@@ -8,6 +8,10 @@
 
 ## Introducción
 
+El objetivo de este trabajo práctico es comprender el funcionamiento del modo protegido de la arquitectura x86, así como también el funcionamiento del bootloader y el proceso de arranque de un sistema operativo.
+
+El trabajo se divide en tres partes: UEFI/Coreboot, el uso de un enlazador (linker) y la creación de un programa en modo protegido.
+
 ## Desarrollo
 
 ### UEFI / Coreboot
@@ -16,7 +20,7 @@
 
 Se creó un sector de arranque MBR (Master boot record) como punto de partida para realizar practicas sobre programas por fuera de un sistema operativo.
 
-```console
+```bash
 $ printf '\364%509s\125\252' > main.img
 $ hd main.img
 00000000  f4 20 20 20 20 20 20 20  20 20 20 20 20 20 20 20  |.               |
@@ -32,7 +36,7 @@ La imagen `main.img` se ejecutó en la máquina virtual QEMU, observando unicame
 
 Luego se intentó grabar un pendrive con la imagen en cuestión:
 
-```console
+```bash
 sudo dd if=main.img of=/dev/sdX
 ```
 
@@ -77,6 +81,8 @@ Hoy en dia es incorporado por las computadoras ThinkPad, Chromebook, Purism, Sys
 
 Su ventaja no reside en una necesidad tecnológica, sino en una ética, ya que para los desarrolladores de este proyecto es importante que todo el software del PC sea libre, y el BIOS ha sido el único que ha quedado olvidado. Los autores esperan que en los próximos años algunos fabricantes estén dispuestos a distribuirlo en sus máquinas, debido a su carácter gratuito.
 
+---
+
 ### Linker
 
 Un enlazador (linker) es una herramienta esencial en el proceso de compilación de un programa. Permite combinar varios modulos objeto en un solo archivo ejecutable que puede correr en un sistema.
@@ -87,22 +93,24 @@ La tarea del enlazador es manejar y conectar diferentes piezas de codigo y datos
 
 Un script de enlazador es un archivo de texto que contiene instrucciones para el enlazador sobre cómo debe organizar y combinar los modulos objeto. Define la estructura del archivo ejecutable final, incluyendo la ubicacion de las secciones de codigo y datos, y como deben ser alineadas en memoria.
 
-EL script linker a utilizar en este trabajo es el siguiente:
+El linker Script a utilizar en este trabajo es el siguiente:
 
-simon@DELL-Inspiron-3505:~/Desktop/S/SdC/SdC/TP3$
-.text :
+```linkerscript
+SECTIONS
 {
-\_\_start = .;
-\*(.text)
-. = 0x1FE;
-SHORT(0xAA55)
+    . = 0x7c00;
+    .text :
+    {
+        __start = .;
+        *(.text)
+        . = 0x1FE;
+        SHORT(0xAA55)
+    }
 }
-}
+```
 
-````
-
->[!NOTE]
->Se quitaron los comentarios para que el script sea más legible.
+> [!NOTE]
+> Se quitaron los comentarios para que el script sea más legible.
 
 ##### Explicación del script
 
@@ -134,7 +142,7 @@ halt:
     hlt
 msg:
     .asciz "hello world"
-````
+```
 
 El programa en ensamblador realiza una simple tarea: imprime el mensaje "hello world" en la pantalla utilizando la interrupción de BIOS `0x10`. La directiva `.code16` al inicio del código indica que el programa debe ejecutarse en modo real de 16 bits, que es el modo utilizado por el BIOS para interactuar con el hardware.
 
@@ -200,6 +208,8 @@ Pasos seguidos:
    ![GDB-HELLO2](./Imagenes/gdb-hello-2.png)
 1. Repetimos el paso 7 hasta completar la cadena de texto "hello world". Hasta que ya que no hay más caracteres para imprimir.
    ![GDB-HELLO3](./Imagenes/qemu-hello-world-3.png)
+
+---
 
 ### Modo Protegido
 
