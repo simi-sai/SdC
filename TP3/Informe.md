@@ -275,4 +275,6 @@ En modo protegido, los registros de segmento son selectores, que contienen:
 - bits de privilegio (RPL)
 - bit TI (tabla usada: GDT o LDT)
 
-Se hace esto para que el CPU lea el descriptor desde la GDT y actualice los registros ocultos (base, límite, atributos), que son necesarios para acceder correctamente a memoria.
+# Se hace esto para que el CPU lea el descriptor desde la GDT y actualice los registros ocultos (base, límite, atributos), que son necesarios para acceder correctamente a memoria.
+
+### Modo Protegido
