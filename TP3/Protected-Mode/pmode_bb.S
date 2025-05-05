@@ -65,7 +65,8 @@ gdt_data:
     .word 0xffff
     .word 0x0
     .byte 0x0
-    .byte 0b10010010
+    # .byte 0b10010010 # este es el byte de acceso del segmento de datos, equivale a 0x92 en hexa
+    .byte 0b10010000  # 0x90 → segmento de datos de solo lectura
     .byte 0b11001111
     .byte 0x0
 gdt_end:
