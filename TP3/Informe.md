@@ -16,7 +16,7 @@
 
 Se creó un sector de arranque MBR (Master boot record) como punto de partida para realizar practicas sobre programas por fuera de un sistema operativo.
 
-```console
+```bash
 $ printf '\364%509s\125\252' > main.img
 $ hd main.img
 00000000  f4 20 20 20 20 20 20 20  20 20 20 20 20 20 20 20  |.               |
@@ -32,7 +32,7 @@ La imagen `main.img` se ejecutó en la máquina virtual QEMU, observando unicame
 
 Luego se intentó grabar un pendrive con la imagen en cuestión:
 
-```console
+```bash
 sudo dd if=main.img of=/dev/sdX
 ```
 
@@ -87,9 +87,12 @@ La tarea del enlazador es manejar y conectar diferentes piezas de codigo y datos
 
 Un script de enlazador es un archivo de texto que contiene instrucciones para el enlazador sobre cómo debe organizar y combinar los modulos objeto. Define la estructura del archivo ejecutable final, incluyendo la ubicacion de las secciones de codigo y datos, y como deben ser alineadas en memoria.
 
-EL script linker a utilizar en este trabajo es el siguiente:
+El linker Script a utilizar en este trabajo es el siguiente:
 
-simon@DELL-Inspiron-3505:~/Desktop/S/SdC/SdC/TP3$ 
+```Linker Script
+SECTIONS
+{
+    . = 0x7c00;
     .text :
     {
         __start = .;
