@@ -46,7 +46,7 @@ La UEFI puede proporcionar menús gráficos adicionales e incluso proporcionar a
 
 ##### Cómo Utilizarlo
 
-Las placas base UEFI de última generación vienen con UEFI Interactive Shell. Este es un programa de shell simple (como bash) responsable de iniciar el sistema operativo. También se puede utilizar el shell interactivo de UEFI para ejecutar scripts y comandos de shell de EFI. 
+Las placas base UEFI de última generación vienen con UEFI Interactive Shell. Este es un programa de shell simple (como bash) responsable de iniciar el sistema operativo. También se puede utilizar el shell interactivo de UEFI para ejecutar scripts y comandos de shell de EFI.
 
 El siguiente artículo muestra cómo acceder al shell interactivo UEFI en placas base UEFI y usar algunos de los comandos comunes de EFI en el shell interactivo UEFI: https://es.linux-console.net/?p=15881
 
@@ -59,9 +59,9 @@ Hay tres metodos comunes en los que las vulnerabilidades pueden ser introducidas
 - Implantes en la cadena de fabricacion (sabotajes)
 - Bugs en el codigo fuente
 - Mala configuracion durante la fabricacion:
-    - El proveedor deja encendido el modo Debug
-    - El flash se deja desbloqueado
-    - Se dejan test keys en el firmware
+  - El proveedor deja encendido el modo Debug
+  - El flash se deja desbloqueado
+  - Se dejan test keys en el firmware
 
 #### CSME e Intel MEBx
 
@@ -89,16 +89,17 @@ Un script de enlazador es un archivo de texto que contiene instrucciones para el
 
 EL script linker a utilizar en este trabajo es el siguiente:
 
-simon@DELL-Inspiron-3505:~/Desktop/S/SdC/SdC/TP3$ 
-    .text :
-    {
-        __start = .;
-        *(.text)
-        . = 0x1FE;
-        SHORT(0xAA55)
-    }
+simon@DELL-Inspiron-3505:~/Desktop/S/SdC/SdC/TP3$
+.text :
+{
+\_\_start = .;
+\*(.text)
+. = 0x1FE;
+SHORT(0xAA55)
 }
-```
+}
+
+````
 
 >[!NOTE]
 >Se quitaron los comentarios para que el script sea más legible.
@@ -133,7 +134,7 @@ halt:
     hlt
 msg:
     .asciz "hello world"
-```
+````
 
 El programa en ensamblador realiza una simple tarea: imprime el mensaje "hello world" en la pantalla utilizando la interrupción de BIOS `0x10`. La directiva `.code16` al inicio del código indica que el programa debe ejecutarse en modo real de 16 bits, que es el modo utilizado por el BIOS para interactuar con el hardware.
 
@@ -157,7 +158,7 @@ La opción `-hda` en el comando `qemu-system-x86_64` especifica el archivo de im
 
 ##### Salida de `objdump`
 
-Muestra el desensamblado del archivo main.img interpretándolo como código i8086 desde el offset 0. Identifica las instrucciones iniciales (`mov`,  `lods`, `int`, `hlt`). Luego objdump continúa desensamblando más allá de `hlt` (offset `0xe`), tratando los siguientes bytes como código.
+Muestra el desensamblado del archivo main.img interpretándolo como código i8086 desde el offset 0. Identifica las instrucciones iniciales (`mov`, `lods`, `int`, `hlt`). Luego objdump continúa desensamblando más allá de `hlt` (offset `0xe`), tratando los siguientes bytes como código.
 
 !["Objdump"](./Imagenes/objdump.png)
 
@@ -167,8 +168,8 @@ Muestra los bytes crudos del archivo desde el offset `0`. Confirma la secuencia 
 
 !["Hexdump"](./Imagenes/hexdump.png)
 
->[!NOTE]
->Ambas salidas se encuentran completas sus en respectivos archivos de texto. La salida de `objdump` se encuentra en `Archivos/objdump.txt` y la salida de `hd` se encuentra en `Archivos/hexdump.txt`.
+> [!NOTE]
+> Ambas salidas se encuentran completas sus en respectivos archivos de texto. La salida de `objdump` se encuentra en `Archivos/objdump.txt` y la salida de `hd` se encuentra en `Archivos/hexdump.txt`.
 
 La coincidencia de bytes entre ambas herramientas y la revelación de la cadena de texto por `hd` confirman que el programa **(código + datos)** está colocado al inicio del archivo `main.img` (offset `0`). Ambas salidas muestran que el archivo tiene `512 bytes` y termina con la firma de arranque `55 aa`.
 
@@ -183,21 +184,85 @@ qemu-system-i386 -drive format=raw,file=./Archivos/01HelloWorld/main.img -boot a
 Pasos seguidos:
 
 1. Se inicia QEMU en una terminal utilizando el codigo anterior.
-![QEMU](./Imagenes/qemu-gdb-start.png)
+   ![QEMU](./Imagenes/qemu-gdb-start.png)
 1. Se abre otra terminal y se inicia GDB.
-2. Se le indica a GDB que se conecte al servidor de depuración de QEMU utilizando el comando `target remote localhost:1234`.
-3. Se configura el entorno de depuración utilizando el comando `set architecture i8086`.
-4. Se set el punto de interrupción en la dirección de inicio del programa utilizando el comando `b *0x7c00`.
-![GDB-QEMU](./Imagenes/qemu-0x7c00.png)
-5. Se inicia la ejecución del programa utilizando el comando `c`.
-6. Una vez alcanzado el breakpoint, se observan las siguientes 10 instrucciones utilizando el comando `x/10i $eip`. Y se setea el segundo breakpoint en la dirección de la instrucción siguiente a la interrupción (`jmp 0x7c05` en `0x7c0c`).
-![GDB-BREAK2](./Imagenes/gdb-break2.png)
-7. Se continúa la ejecución del programa utilizando el comando `c`.
-8. Se observa que el programa se detiene luego de escribir una letra en la pantalla. Esto se debe a que la instrucción `int 0x10` es una llamada a la interrupción de BIOS que imprime el carácter en el registro `al` en la pantalla.
-![GDB-HELLO](./Imagenes/gdb-hello.png)
-9. Si repetimos varias veces el paso 7, se puede observar que el programa sigue ejecutándose y escribiendo letras en la pantalla.
-![GDB-HELLO2](./Imagenes/gdb-hello-2.png)
-10. Repetimos el paso 7 hasta completar la cadena de texto "hello world". Hasta que ya que no hay más caracteres para imprimir.
-![GDB-HELLO3](./Imagenes/qemu-hello-world-3.png)
+1. Se le indica a GDB que se conecte al servidor de depuración de QEMU utilizando el comando `target remote localhost:1234`.
+1. Se configura el entorno de depuración utilizando el comando `set architecture i8086`.
+1. Se set el punto de interrupción en la dirección de inicio del programa utilizando el comando `b *0x7c00`.
+   ![GDB-QEMU](./Imagenes/qemu-0x7c00.png)
+1. Se inicia la ejecución del programa utilizando el comando `c`.
+1. Una vez alcanzado el breakpoint, se observan las siguientes 10 instrucciones utilizando el comando `x/10i $eip`. Y se setea el segundo breakpoint en la dirección de la instrucción siguiente a la interrupción (`jmp 0x7c05` en `0x7c0c`).
+   ![GDB-BREAK2](./Imagenes/gdb-break2.png)
+1. Se continúa la ejecución del programa utilizando el comando `c`.
+1. Se observa que el programa se detiene luego de escribir una letra en la pantalla. Esto se debe a que la instrucción `int 0x10` es una llamada a la interrupción de BIOS que imprime el carácter en el registro `al` en la pantalla.
+   ![GDB-HELLO](./Imagenes/gdb-hello.png)
+1. Si repetimos varias veces el paso 7, se puede observar que el programa sigue ejecutándose y escribiendo letras en la pantalla.
+   ![GDB-HELLO2](./Imagenes/gdb-hello-2.png)
+1. Repetimos el paso 7 hasta completar la cadena de texto "hello world". Hasta que ya que no hay más caracteres para imprimir.
+   ![GDB-HELLO3](./Imagenes/qemu-hello-world-3.png)
 
 ### Modo Protegido
+
+#### a) Dos descriptores de memoria diferentes (uno para código y otro para datos)
+
+En modo protegido usamos una GDT (Global Descriptor Table), que es una estructura de memoria donde definimos descriptores. Cada descriptor tiene:
+
+Base: dirección inicial del segmento
+
+Límite: tamaño del segmento
+
+Bits de acceso: permisos y tipo (código, datos, etc)
+
+Entonces:
+
+Descriptor de código: por ejemplo, base 0x00000000, límite 0x000FFFFF, permisos de ejecución y lectura.
+
+Descriptor de datos: base distinta, por ejemplo 0x00100000, límite 0x000FFFFF, permisos de lectura solamente.
+
+Así estás separando el código y los datos en distintas zonas de memoria, y protegiendo los datos contra escritura.
+
+#### b) ¿Qué pasa si el segmento de datos es solo lectura y se intenta escribir?
+
+En modo protegido, si intentás escribir en un segmento de solo lectura, el procesador detecta una violación de protección de memoria y lanza una excepción de falla de segmento (General Protection Fault - #GP).
+
+Esto es una de las ventajas del modo protegido: permite prevenir errores graves o comportamientos inesperados
+
+##### Verificacion en codigo
+
+<img src="Imagenes/pb_antes.png">
+Cambios a hacer:
+
+Cambio el byte de acceso de gdt_data de 0x92 a 0x90 (esto lo vuelve read-only).
+
+- 0b10010010 = 0x92 = 1001 0010 (presente, ring 0, data segment, writable)
+- 0b10010000 = 0x90 = 1001 0000 (presente, ring 0, data segment, not writable)
+
+<img src="Imagenes/pb_despues.png">
+
+Luego intento hacer una escritura y el CPU lanza una excepción #GP (General Protection Fault).
+
+#### c) ¿Con qué valor se cargan los registros de segmento (CS, DS, etc) en modo protegido?
+
+No se cargan directamente con direcciones, sino con selectores. Un selector es un valor que indica:
+
+- El índice del descriptor en la GDT
+- El nivel de privilegio (CPL)
+- Si es GDT o LDT
+  Por ejemplo, si el descriptor de código está en la posición 1 de la GDT:
+  El selector será 0x08 (1 << 3)
+  Se carga con: mov ax, 0x08 ; mov ds, ax
+  Entonces:
+  Los registros de segmento se cargan con selectores que apuntan a los descriptores definidos en la GDT.
+  Esto permite que el procesador interprete correctamente desde qué base leer la memoria, qué permisos hay, etc.
+
+##### Verificacion en codigo
+
+<img src="Imagenes/p_a.png">
+Esto carga ds, es, etc. con el selector del segmento de datos.
+En modo protegido, los registros de segmento son selectores, que contienen:
+
+- índice dentro de la GDT
+- bits de privilegio (RPL)
+- bit TI (tabla usada: GDT o LDT)
+
+Se hace esto para que el CPU lea el descriptor desde la GDT y actualice los registros ocultos (base, límite, atributos), que son necesarios para acceder correctamente a memoria.
