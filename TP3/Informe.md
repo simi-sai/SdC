@@ -192,46 +192,43 @@ qemu-system-i386 -drive format=raw,file=./Archivos/01HelloWorld/main.img -boot a
 Pasos seguidos:
 
 1. Se inicia QEMU en una terminal utilizando el codigo anterior.
-   ![QEMU](./Imagenes/qemu-gdb-start.png)
-1. Se abre otra terminal y se inicia GDB.
-1. Se le indica a GDB que se conecte al servidor de depuración de QEMU utilizando el comando `target remote localhost:1234`.
-1. Se configura el entorno de depuración utilizando el comando `set architecture i8086`.
-1. Se set el punto de interrupción en la dirección de inicio del programa utilizando el comando `b *0x7c00`.
-   ![GDB-QEMU](./Imagenes/qemu-0x7c00.png)
-1. Se inicia la ejecución del programa utilizando el comando `c`.
-1. Una vez alcanzado el breakpoint, se observan las siguientes 10 instrucciones utilizando el comando `x/10i $eip`. Y se setea el segundo breakpoint en la dirección de la instrucción siguiente a la interrupción (`jmp 0x7c05` en `0x7c0c`).
-   ![GDB-BREAK2](./Imagenes/gdb-break2.png)
-1. Se continúa la ejecución del programa utilizando el comando `c`.
-1. Se observa que el programa se detiene luego de escribir una letra en la pantalla. Esto se debe a que la instrucción `int 0x10` es una llamada a la interrupción de BIOS que imprime el carácter en el registro `al` en la pantalla.
-   ![GDB-HELLO](./Imagenes/gdb-hello.png)
-1. Si repetimos varias veces el paso 7, se puede observar que el programa sigue ejecutándose y escribiendo letras en la pantalla.
-   ![GDB-HELLO2](./Imagenes/gdb-hello-2.png)
-1. Repetimos el paso 7 hasta completar la cadena de texto "hello world". Hasta que ya que no hay más caracteres para imprimir.
-   ![GDB-HELLO3](./Imagenes/qemu-hello-world-3.png)
+![QEMU](./Imagenes/qemu-gdb-start.png)
+2. Se abre otra terminal y se inicia GDB.
+3. Se le indica a GDB que se conecte al servidor de depuración de QEMU utilizando el comando `target remote localhost:1234`.
+4. Se configura el entorno de depuración utilizando el comando `set architecture i8086`.
+5. Se set el punto de interrupción en la dirección de inicio del programa utilizando el comando `b *0x7c00`.
+![GDB-QEMU](./Imagenes/qemu-0x7c00.png)
+6. Se inicia la ejecución del programa utilizando el comando `c`.
+7. Una vez alcanzado el breakpoint, se observan las siguientes 10 instrucciones utilizando el comando `x/10i $eip`. Y se setea el segundo breakpoint en la dirección de la instrucción siguiente a la interrupción (`jmp 0x7c05` en `0x7c0c`).
+![GDB-BREAK2](./Imagenes/gdb-break2.png)
+8. Se continúa la ejecución del programa utilizando el comando `c`.
+9. Se observa que el programa se detiene luego de escribir una letra en la pantalla. Esto se debe a que la instrucción `int 0x10` es una llamada a la interrupción de BIOS que imprime el carácter en el registro `al` en la pantalla.
+![GDB-HELLO](./Imagenes/gdb-hello.png)
+10. Si repetimos varias veces el paso 7, se puede observar que el programa sigue ejecutándose y escribiendo letras en la pantalla.
+![GDB-HELLO2](./Imagenes/gdb-hello-2.png)
+11. Repetimos el paso 7 hasta completar la cadena de texto "hello world". Hasta que ya que no hay más caracteres para imprimir.
+![GDB-HELLO3](./Imagenes/qemu-hello-world-3.png)
 
 ---
 
 ### Modo Protegido
 
-#### a) Dos descriptores de memoria diferentes (uno para código y otro para datos)
+#### a. Dos descriptores de memoria diferentes (uno para código y otro para datos)
 
 En modo protegido usamos una GDT (Global Descriptor Table), que es una estructura de memoria donde definimos descriptores. Cada descriptor tiene:
 
-Base: dirección inicial del segmento
-
-Límite: tamaño del segmento
-
-Bits de acceso: permisos y tipo (código, datos, etc)
+- **Base:** dirección inicial del segmento.
+- **Límite:** tamaño del segmento.
+- **Bits de acceso:** permisos y tipo (código, datos, etc).
 
 Entonces:
 
-Descriptor de código: por ejemplo, base 0x00000000, límite 0x000FFFFF, permisos de ejecución y lectura.
-
-Descriptor de datos: base distinta, por ejemplo 0x00100000, límite 0x000FFFFF, permisos de lectura solamente.
+- **Descriptor de código:** por ejemplo, base `0x00000000`, límite `0x000FFFFF`, permisos de ejecución y lectura.
+- **Descriptor de datos:** base distinta, por ejemplo `0x00100000`, límite `0x000FFFFF`, permisos de lectura solamente.
 
 Así estás separando el código y los datos en distintas zonas de memoria, y protegiendo los datos contra escritura.
 
-#### b) ¿Qué pasa si el segmento de datos es solo lectura y se intenta escribir?
+#### b. ¿Qué pasa si el segmento de datos es solo lectura y se intenta escribir?
 
 En modo protegido, si intentás escribir en un segmento de solo lectura, el procesador detecta una violación de protección de memoria y lanza una excepción de falla de segmento (General Protection Fault - #GP).
 
@@ -240,35 +237,41 @@ Esto es una de las ventajas del modo protegido: permite prevenir errores graves 
 ##### Verificacion en codigo
 
 <img src="Imagenes/pb_antes.png">
+
 Cambios a hacer:
 
-Cambio el byte de acceso de gdt_data de 0x92 a 0x90 (esto lo vuelve read-only).
+Cambio el byte de acceso de `gdt_data` de `0x92` a `0x90` (esto lo vuelve read-only).
 
-- 0b10010010 = 0x92 = 1001 0010 (presente, ring 0, data segment, writable)
-- 0b10010000 = 0x90 = 1001 0000 (presente, ring 0, data segment, not writable)
+- `0b10010010` = `0x92` = `1001 0010` (presente, ring 0, data segment, writable)
+- `0b10010000` = `0x90` = `1001 0000` (presente, ring 0, data segment, not writable)
 
 <img src="Imagenes/pb_despues.png">
 
 Luego intento hacer una escritura y el CPU lanza una excepción #GP (General Protection Fault).
 
-#### c) ¿Con qué valor se cargan los registros de segmento (CS, DS, etc) en modo protegido?
+#### c. ¿Con qué valor se cargan los registros de segmento (CS, DS, etc) en modo protegido?
 
 No se cargan directamente con direcciones, sino con selectores. Un selector es un valor que indica:
 
 - El índice del descriptor en la GDT
 - El nivel de privilegio (CPL)
 - Si es GDT o LDT
-  Por ejemplo, si el descriptor de código está en la posición 1 de la GDT:
-  El selector será 0x08 (1 << 3)
-  Se carga con: mov ax, 0x08 ; mov ds, ax
-  Entonces:
-  Los registros de segmento se cargan con selectores que apuntan a los descriptores definidos en la GDT.
-  Esto permite que el procesador interprete correctamente desde qué base leer la memoria, qué permisos hay, etc.
+  
+Por ejemplo, si el descriptor de código está en la posición 1 de la GDT:
 
-##### Verificacion en codigo
+- El selector será 0x08 (1 << 3)
+- Se carga con: mov ax, 0x08 ; mov ds, ax
+
+Entonces:
+- Los registros de segmento se cargan con selectores que apuntan a los descriptores definidos en la GDT.
+- Esto permite que el procesador interprete correctamente desde qué base leer la memoria, qué permisos hay, etc.
+
+##### Verificacion en Codigo
 
 <img src="Imagenes/p_a.png">
-Esto carga ds, es, etc. con el selector del segmento de datos.
+
+Esto carga `ds`, `es`, etc. con el selector del segmento de datos.
+
 En modo protegido, los registros de segmento son selectores, que contienen:
 
 - índice dentro de la GDT
@@ -276,3 +279,7 @@ En modo protegido, los registros de segmento son selectores, que contienen:
 - bit TI (tabla usada: GDT o LDT)
 
 Se hace esto para que el CPU lea el descriptor desde la GDT y actualice los registros ocultos (base, límite, atributos), que son necesarios para acceder correctamente a memoria.
+
+## Conclusiones
+
+El trabajo práctico nos permitió comprender el funcionamiento del modo protegido de la arquitectura x86, así como también el funcionamiento del bootloader y el proceso de arranque de un sistema operativo. Aprendimos a utilizar herramientas como QEMU y GDB para depurar programas en modo real y protegido, y a utilizar un enlazador para crear archivos ejecutables.
