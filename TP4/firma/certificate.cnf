@@ -1,0 +1,26 @@
+# This definition stops the following lines choking if HOME isn't
+# defined.
+HOME                    = .
+RANDFILE                = $ENV::HOME/.rnd 
+[ req ]
+distinguished_name      = req_distinguished_name    # Subject fields (DN)
+x509_extensions         = v1                        # Extensions defined in section [v1]
+string_mask             = utf8only                  # Force UTF-8 in DN
+prompt                  = no                        # Don't ask to introduce DN values
+
+# Optional section. You can also remove it along with the
+# "distinguished_name" and "prompt" fields above.
+[ req_distinguished_name ]
+countryName             = AR
+stateOrProvinceName     = Cordoba
+localityName            = Cordoba
+0.organizationName      = Universidad Nacional de Cordoba
+commonName              = Secure Boot Signing
+emailAddress            = ruben.zuniga@mi.unc.edu.ar
+
+[ v1 ]
+subjectKeyIdentifier    = hash                  # Subject identificator (based on pubkey hash)
+authorityKeyIdentifier  = keyid:always,issuer   # Always include keyid and issuer that signed the certificate
+basicConstraints        = critical,CA:FALSE     # Requires a strict validation and it's not a Certificate Authority
+extendedKeyUsage        = codeSigning,1.3.6.1.4.1.311.10.3.6,1.3.6.1.4.1.2312.16.1.2    # Used to sign modules, Microsoft EKU, Linux kernel EKU (Extended Key Usage)
+nsComment               = "OpenSSL Generated Certificate"
