@@ -130,7 +130,7 @@ Soluciones:
 
 ## 4. Usar hwinfo y subir la info a un paste online
 
-![Hwinfo](modules/img/hwinfo.png)
+![Hwinfo](modules/images/hwinfo.png)
 
 ### URL:
 
