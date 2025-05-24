@@ -1,0 +1,89 @@
+cpu:
+                       AMD Athlon 3000G with Radeon Vega Graphics, 3485 MHz
+                       AMD Athlon 3000G with Radeon Vega Graphics, 1512 MHz
+                       AMD Athlon 3000G with Radeon Vega Graphics, 3410 MHz
+                       AMD Athlon 3000G with Radeon Vega Graphics, 1533 MHz
+keyboard:
+  /dev/input/event3    Logitech Keyboard K120
+mouse:
+  /dev/input/mice      Logitech G203 LIGHTSYNC Gaming Mouse
+monitor:
+                       PHILIPS PHL 221V8
+graphics card:
+                       ATI Picasso
+sound:
+                       AMD Family 17h (Models 10h-1fh) HD Audio Controller
+                       ATI Raven/Raven2/Fenghuang HDMI/DP Audio Controller
+                       Tenx USB  AUDIO
+storage:
+                       AMD FCH SATA Controller [AHCI mode]
+                       AMD SATA controller
+network:
+  enp5s0               Realtek RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller
+network interface:
+  enp5s0               Ethernet network interface
+  lo                   Loopback network interface
+  docker0              Ethernet network interface
+  br-43226bd5dc31      Ethernet network interface
+  br-0567acaa22aa      Ethernet network interface
+  br-af50ff4a8d11      Ethernet network interface
+  br-7d897d40e69e      Ethernet network interface
+  enx36862c8d2f5a      Ethernet network interface
+disk:
+  /dev/sdb             ST1000DM010-2EP1
+  /dev/sda             GIGABYTE GP-GSTF
+partition:
+  /dev/sdb1            Partition
+  /dev/sdb2            Partition
+  /dev/sdb3            Partition
+  /dev/sdb4            Partition
+  /dev/sda1            Partition
+  /dev/sda2            Partition
+  /dev/sda3            Partition
+  /dev/sda4            Partition
+usb controller:
+                       AMD USB Controller
+                       AMD Raven2 USB 3.1
+bios:
+                       BIOS
+bridge:
+                       AMD 300 Series Chipset PCIe Port
+                       AMD Family 17h (Models 00h-1fh) PCIe Dummy Host Bridge
+                       AMD Raven/Raven2 Device 24: Function 3
+                       AMD Zeppelin Switch Upstream (PCIE SW.US)
+                       AMD Raven/Raven2 Device 24: Function 1
+                       AMD Family 17h (Models 00h-1fh) PCIe Dummy Host Bridge
+                       AMD PCI bridge
+                       AMD FCH LPC Bridge
+                       AMD 300 Series Chipset PCIe Port
+                       AMD Raven/Raven2 Device 24: Function 6
+                       AMD Raven/Raven2 Root Complex
+                       AMD Raven/Raven2 Internal PCIe GPP Bridge 0 to Bus A
+                       AMD Raven/Raven2 Device 24: Function 4
+                       AMD Raven/Raven2 Device 24: Function 2
+                       AMD 300 Series Chipset PCIe Port
+                       AMD Raven/Raven2 Device 24: Function 0
+                       AMD Raven/Raven2 Device 24: Function 7
+                       AMD 300 Series Chipset PCIe Port
+                       AMD Raven/Raven2 Internal PCIe GPP Bridge 0 to Bus B
+                       AMD Raven/Raven2 Device 24: Function 5
+hub:
+                       Linux Foundation 2.0 root hub
+                       Linux Foundation 3.0 root hub
+                       Linux Foundation 2.0 root hub
+                       Linux Foundation 3.0 root hub
+memory:
+                       Main Memory
+unknown:
+                       FPU
+                       DMA controller
+                       PIC
+                       Keyboard controller
+                       AMD Family 17h (Models 10h-1fh) Platform Security Processor
+                       AMD Raven/Raven2 IOMMU
+                       AMD FCH SMBus Controller
+                       Serial controller
+                       Samsung Electronics GT-I9070 (network tethering, USB debugging enabled)
+  /dev/input/event4    Logitech Keyboard K120
+  /dev/input/event2    Tenx USB  AUDIO
+  /dev/input/event6    Logitech G203 LIGHTSYNC Gaming Mouse
