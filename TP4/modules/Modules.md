@@ -128,6 +128,12 @@ Soluciones:
 - Buscar e instalar el paquete del driver adecuado (por ejemplo, apt install firmware-realtek).
 - En casos más extremos, compilar el módulo vos mismo si es muy específico.
 
-```
+## 4. Usar hwinfo y subir la info a un paste online
 
+![Hwinfo](modules/img/hwinfo.png)
+
+### URL:
+
+```plain
+- https://termbin.com/ypxj
 ```
