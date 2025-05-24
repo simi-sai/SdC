@@ -137,3 +137,39 @@ Soluciones:
 ```plain
 - https://termbin.com/ypxj
 ```
+
+## 5. ¿Qué diferencia existe entre un módulo y un programa ?
+
+### Modulo
+
+Es una pieza de código que se puede cargar o descargar dinámicamente en el núcleo del sistema operativo (kernel) sin necesidad de reiniciar.
+
+- Ejemplo: un controlador (driver) de hardware, como snd_hda_intel.ko para audio o e1000e.ko para una placa de red Intel.
+- Se integra directamente con el kernel usando interfaces internas.
+
+Se usa para extender las funcionalidades del kernel, por ejemplo:
+
+- Soporte para nuevos dispositivos
+- Sistemas de archivos adicionales
+- Protocolo de red adicional
+
+#### Caracteristicas
+
+- No se ejecuta como proceso en espacio de usuario, sino en modo kernel (kernel space).
+- Cualquier error puede comprometer la estabilidad del sistema.
+- Se cargan con insmod, modprobe y se listan con lsmod.
+
+### Programa
+
+Es una aplicación que se ejecuta en el espacio de usuario.
+
+- Ejemplo: ls, firefox, htop, un juego, o un script de Python.
+- Se comunica con el kernel a través de llamadas al sistema (syscalls).
+
+Se utiliza para realizar tareas específicas para el usuario o sistema.
+
+#### Caracteristicas
+
+- Corre como un proceso aislado, protegido del resto del sistema.
+- Los errores generalmente no afectan al sistema operativo.
+- Se ejecutan desde la terminal o entorno gráfico
