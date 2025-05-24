@@ -6,3 +6,5 @@ __pycache__
 *.so
 *.inc
 TP3/protected-mode-sdc/*
+MOK.der
+MOK.priv
