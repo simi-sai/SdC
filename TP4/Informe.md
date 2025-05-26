@@ -569,3 +569,27 @@ Luego con el clean limpia los archivos generados de la compilación (_.o, _.ko, 
 ###### Se verifica con demsg
 
 ![Demsg2](modules/images/descarga2.png)
+
+#### 10. ¿Que pasa si mi compañero con secure boot habilitado intenta cargar un módulo firmado por mi?
+
+Si mi compañero tiene Secure Boot habilitado y intenta cargar un módulo de kernel firmado por mi, lo más probable es que el módulo sea rechazado y no se cargue. Secure Boot está diseñado para cargar solo software de arranque con una firma digital válida y de confianza, y mi clave de firma personal no estaría incluida en la base de datos de confianza de su sistema por defecto.
+
+Para que mi compañero pueda cargar mi módulo, tendría que deshabilitar Secure Boot o inscribir mi clave pública en la base de datos MOK (Machine Owner Key) de su sistema, lo que le permitiría reconocer mi firma como válida. Sin estos pasos, el sistema considerará mi módulo como no confiable y bloqueará su carga.
+
+#### 11. Dada la siguiente nota 
+
+Link: https://arstechnica.com/security/2024/08/a-patch-microsoft-spent-2-years-preparing-is-making-a-mess-for-some-linux-users/
+
+##### a. ¿Cuál fue la consecuencia principal del parche de Microsoft sobre GRUB en sistemas con arranque dual (Linux y Windows)?
+
+La consecuencia principal del parche de Microsoft, con un rating de gravedad de 8.6 sobre 10, hizo posible para los atacantes eludir el Secure Boot, que es el estándar de la industria para garantizar que los dispositivos que ejecutan Windows u otros sistemas operativos no carguen firmware o software malicioso durante el proceso de arranque.
+
+##### b. ¿Qué implicancia tiene desactivar Secure Boot como solución al problema descrito en el artículo?
+
+Desactivar Secure Boot como solución al problema descrito en el artículo implica una reducción significativa de la seguridad del sistema. Al desactivar esta característica, se permite que cualquier software, incluso aquel que no ha sido verificado o firmado digitalmente, se cargue durante el proceso de arranque. Esto abre la puerta a potenciales ataques de malware, rootkits y otros tipos de software malicioso que podrían comprometer la integridad y seguridad del sistema operativo y los datos del usuario. Por lo tanto, aunque puede ser una solución temporal para permitir el arranque dual, no es recomendable a largo plazo debido a los riesgos asociados.
+
+##### c. ¿Cuál es el propósito principal del Secure Boot en el proceso de arranque de un sistema?
+
+El propósito principal del Secure Boot en el proceso de arranque de un sistema es garantizar que solo se cargue software de arranque y controladores que sean confiables y estén firmados digitalmente por una entidad autorizada. Esto ayuda a prevenir la ejecución de código malicioso durante el arranque, protegiendo así el sistema contra ataques como rootkits, bootkits y otros tipos de malware que podrían comprometer la seguridad del dispositivo desde el inicio.
+
+## Conclusión
