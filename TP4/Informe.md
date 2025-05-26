@@ -8,8 +8,7 @@
 
 ## Introducción
 
->[!NOTE]
-> COMPLETAR
+En este trabajo se realizaron investigaciones en base a lo relacionado a los modulos de kernel. Estos son fragmentos de código, al igual que los programas que se ejecutan como procesos, pero con varias diferencias en cuanto a privilegios de acceso al hardware del computador. Se plantean otros conceptos aparte que sirvieron como herramienta para la experimentación sobre estos modulos.
 
 ## Desarrollo
 
@@ -349,12 +348,11 @@ Ambos módulos incluyen campos como vermagic y depends, pero los del sistema sue
 
 #### 2. Drivers/modulos cargados en nuestras PC's
 
-Cada lista de modulos cargado de cada integrante va a estar en su correspondiente modules_nombre.txt, debajo se hace una comparacion entre los tres
+Cada lista de modulos cargado de cada integrante va a estar en su correspondiente modules_nombre.txt, y se utilizo un comparador de texto online para realizar un diff entre estos tres archivos.
 
-##### Diff
-
->[!NOTE]
-> COMPLETAR
+- [**Diff entre la lista de Rodrigo y Rubén**](https://www.diffchecker.com/nWgvwnCQ/)
+- [**Diff entre la lista de Rubén y Simón**](https://www.diffchecker.com/JxZcs21S/)
+- [**Diff entre la lista de Simón y Rodrigo**](https://www.diffchecker.com/q8kZda7J/)
 
 #### 3.
 
@@ -593,3 +591,5 @@ Desactivar Secure Boot como solución al problema descrito en el artículo impli
 El propósito principal del Secure Boot en el proceso de arranque de un sistema es garantizar que solo se cargue software de arranque y controladores que sean confiables y estén firmados digitalmente por una entidad autorizada. Esto ayuda a prevenir la ejecución de código malicioso durante el arranque, protegiendo así el sistema contra ataques como rootkits, bootkits y otros tipos de malware que podrían comprometer la seguridad del dispositivo desde el inicio.
 
 ## Conclusión
+
+Se concluye que los módulos de kernel son la base del control de todo el sistema de hardware de la máquina, ya que se logró experimentar con un módulo propio y observar su comportamiento sobre los registros del kernel, ademas de insertar una firma para comprobar cómo el sistema acepta o rechaza este modulo. Esto permitió observar cómo difieren un modulo de kernel y un programa, ya que ambos tienen su espacio de memoria reservado.
