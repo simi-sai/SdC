@@ -64,64 +64,6 @@ Este y otros programas parecidos pueden evitarse mediante varias acciones:
 - Deshabilitar la carga de modulos en entornos criticos
 - Mantener deshabilitados los modulos que no sean de utilidad
 
-#### Firma del modulo `mimodulo`
-
-Para colocar una firma al modulo `mimodulo.ko`, primero se creo un certificado X509 en Shim mediante un archivo de configuración.
-
-```cnf
-# certificate.cnf
-
-# This definition stops the following lines choking if HOME isn't
-# defined.
-HOME                    = .
-RANDFILE                = $ENV::HOME/.rnd 
-[ req ]
-distinguished_name      = req_distinguished_name    # Subject fields (DN)
-x509_extensions         = v1                        # Extensions defined in section [v1]
-string_mask             = utf8only                  # Force UTF-8 in DN
-prompt                  = no                        # Don't ask to introduce DN values
-
-# Optional section. You can also remove it along with the
-# "distinguished_name" and "prompt" fields above.
-[ req_distinguished_name ]
-countryName             = AR
-stateOrProvinceName     = Cordoba
-localityName            = Cordoba
-0.organizationName      = Universidad Nacional de Cordoba
-commonName              = Secure Boot Signing
-emailAddress            = ruben.zuniga@mi.unc.edu.ar
-
-[ v1 ]
-subjectKeyIdentifier    = hash                  # Subject identificator (based on pubkey hash)
-authorityKeyIdentifier  = keyid:always,issuer   # Always include keyid and issuer that signed the certificate
-basicConstraints        = critical,CA:FALSE     # Requires a strict validation and it's not a Certificate Authority
-extendedKeyUsage        = codeSigning,1.3.6.1.4.1.311.10.3.6,1.3.6.1.4.1.2312.16.1.2    # Used to sign modules, Microsoft EKU, Linux kernel EKU (Extended Key Usage)
-nsComment               = "OpenSSL Generated Certificate"
-```
-
-Luego, se crearon las llaves privadas y publicas.
-
-![Creacion de llaves](firma/img/tp4_certificado.png)
-
-Para realizar la firma se necesitan ambas, y para "enrollar" la llave en shim se utiliza la publica (MOK.der):
-
-![Firma](firma/img/tp4_certificado2.png)
-
-Luego se reinició la maquina y se mostró la pantalla de MokManager antes de la carga de GRUB. Aqui es donde se enrollo la llave.
-
-![Enroll MOK](firma/img/enroll_mok.jpeg)
-
-![Descripcion del MOK](firma/img/descripcion.jpeg)
-
-Finalmente se firmó el modulo de kernel `mimodulo.ko`. A continuacion se muestra la ejecucion del comando `insmod` antes y despues de realizar la firma, todo esto con Secure Boot habilitado.
-
-![Firma de mimodulo.ko](firma/img/tp4_cargado.png)
-
-Se puede verificar si un módulo esta firmado observando que a la salida de `hexdump` se incluya el string "Module signature appended".
-
-![Hexdump de mimodulo.ko con firma](firma/img/tp4_firma.png)
-
-
 ---
 
 ### Desafio N°2: Modulos vs Programas
@@ -283,35 +225,21 @@ Se dividen en:
 
 #### 1. ¿Qué diferencias se pueden observar entre los dos modinfo?
 
-Al comparar la salida de modinfo para un módulo personalizado (mimodulo.ko) con la de un módulo del sistema (/lib/modules/$(uname -r)/kernel/crypto/des_generic.ko), se observan varias diferencias importantes:
+Al comparar la salida de modinfo para un módulo personalizado (`mimodulo.ko`) con la de un módulo del sistema (`/lib/modules/$(uname -r)/kernel/crypto/des_generic.ko`), se observan varias diferencias importantes:
 
-##### Ubicación y propósito:
-
-mimodulo.ko es un módulo creado por el usuario, compilado manualmente, y aún no está instalado en el árbol del kernel.
-
-des_generic.ko es un módulo oficial del kernel, ubicado dentro de la jerarquía /lib/modules/, y forma parte del sistema operativo.
-
-##### Firma digital (signature):
-
-des_generic.ko incluye una firma digital que permite verificar su integridad y autenticidad. Esto es importante para sistemas con Secure Boot o políticas estrictas de carga de módulos.
-
-mimodulo.ko no tiene firma digital, lo que es común en módulos desarrollados localmente. Esto puede impedir su carga en sistemas que requieren firma, a menos que se desactive Secure Boot o se firme manualmente.
-
-##### Alias:
-
-des_generic.ko incluye alias que permiten que el kernel lo cargue automáticamente cuando detecta hardware o condiciones específicas asociadas.
-
-mimodulo.ko generalmente no tiene alias definidos, a menos que se especifiquen explícitamente mediante macros como MODULE_ALIAS.
-
-##### Metadatos adicionales:
-
-Los módulos del sistema suelen tener más campos definidos (como srcversion, intree, retpoline, etc.) que indican si el módulo fue construido como parte del árbol oficial del kernel, si soporta mitigaciones de seguridad, entre otros.
-
-En el módulo personalizado, estos campos pueden faltar o tener valores genéricos.
-
-##### Compatibilidad y dependencias:
-
-Ambos módulos incluyen campos como vermagic y depends, pero los del sistema suelen estar más alineados con la configuración actual del kernel, mientras que un módulo personalizado puede generar errores si no fue compilado con los headers correctos.
+- **Ubicación y propósito:** 
+  - `mimodulo.ko` es un módulo creado por el usuario, compilado manualmente, y aún no está instalado en el árbol del kernel.
+  - `des_generic.ko` es un módulo oficial del kernel, ubicado dentro de la jerarquía /lib/modules/, y forma parte del sistema operativo.
+- **Firma digital (signature):**
+  - `des_generic.ko` incluye una firma digital que permite verificar su integridad y autenticidad. Esto es importante para sistemas con Secure Boot o políticas estrictas de carga de módulos.
+  - `mimodulo.ko` no tiene firma digital, lo que es común en módulos desarrollados localmente. Esto puede impedir su carga en sistemas que requieren firma, a menos que se desactive Secure Boot o se firme manualmente.
+- **Alias:**
+  - `des_generic.ko` incluye alias que permiten que el kernel lo cargue automáticamente cuando detecta hardware o condiciones específicas asociadas.
+  - `mimodulo.ko` generalmente no tiene alias definidos, a menos que se especifiquen explícitamente mediante macros como MODULE_ALIAS.
+- **Metadatos adicionales:** 
+  - Los módulos del sistema suelen tener más campos definidos (como `srcversion`, `intree`, `retpoline`, etc.) que indican si el módulo fue construido como parte del árbol oficial del kernel, si soporta mitigaciones de seguridad, entre otros.
+  - En el módulo personalizado, estos campos pueden faltar o tener valores genéricos.
+- **Compatibilidad y dependencias:** Ambos módulos incluyen campos como vermagic y depends, pero los del sistema suelen estar más alineados con la configuración actual del kernel, mientras que un módulo personalizado puede generar errores si no fue compilado con los headers correctos.
 
 #### 2. Drivers/modulos cargados en nuestras PC's
 
@@ -335,9 +263,7 @@ find /lib/modules/$(uname -r) -type f -name "*.ko*" | xargs -n1 basename | sed '
 ```
 
 - find ... -name "_.ko_": encuentra todos los archivos de módulo (.ko, .ko.xz, etc.).
-
 - xargs -n1 basename: quita la ruta completa, dejando solo el nombre del archivo.
-
 - sed 's/\.ko.\*$//': limpia la extensión (.ko, .ko.xz, etc.) para mostrar el nombre del módulo limpio, tal como aparece en lsmod.
 
 2) Ver los módulos cargados actualmente:
@@ -384,7 +310,7 @@ comm -23 modules_disponibles_rodri.txt modules_rodri.txt
 comm -13 modules_disponibles_rodri.txt modules_rodri.txt
 ```
 
-- comm compara dos archivos línea a línea (los archivos deben estar ordenados).
+- `comm` compara dos archivos línea a línea (los archivos deben estar ordenados).
 - La columna 1 de comm son líneas únicas del primer archivo.
 - La columna 2 son líneas comunes.
 - La columna 3 son líneas únicas del segundo archivo.
@@ -412,11 +338,7 @@ Soluciones:
 
 ![Hwinfo](modules/images/hwinfo.png)
 
-##### URL:
-
-```plain
-- https://termbin.com/ypxj
-```
+URL: https://termbin.com/ypxj
 
 #### 5. ¿Qué diferencia existe entre un módulo y un programa ?
 
@@ -490,6 +412,64 @@ Un programa puede capturar la señal SIGSEGV usando funciones como signal() o si
 
 - Es un mecanismo de protección: impide que los programas corrompan memoria de otros procesos o del propio kernel.
 - Ayuda a detectar bugs graves en el código (punteros mal usados, accesos fuera de rango, etc.).
+
+#### 8. ¿Se animan a intentar firmar un módulo de kernel? Documentar el proceso.
+
+Para colocar una firma al modulo `mimodulo.ko`, primero se creo un certificado X509 en Shim mediante un archivo de configuración.
+
+```cnf
+# certificate.cnf
+
+# This definition stops the following lines choking if HOME isn't
+# defined.
+HOME                    = .
+RANDFILE                = $ENV::HOME/.rnd 
+[ req ]
+distinguished_name      = req_distinguished_name    # Subject fields (DN)
+x509_extensions         = v1                        # Extensions defined in section [v1]
+string_mask             = utf8only                  # Force UTF-8 in DN
+prompt                  = no                        # Don't ask to introduce DN values
+
+# Optional section. You can also remove it along with the
+# "distinguished_name" and "prompt" fields above.
+[ req_distinguished_name ]
+countryName             = AR
+stateOrProvinceName     = Cordoba
+localityName            = Cordoba
+0.organizationName      = Universidad Nacional de Cordoba
+commonName              = Secure Boot Signing
+emailAddress            = ruben.zuniga@mi.unc.edu.ar
+
+[ v1 ]
+subjectKeyIdentifier    = hash                  # Subject identificator (based on pubkey hash)
+authorityKeyIdentifier  = keyid:always,issuer   # Always include keyid and issuer that signed the certificate
+basicConstraints        = critical,CA:FALSE     # Requires a strict validation and it's not a Certificate Authority
+extendedKeyUsage        = codeSigning,1.3.6.1.4.1.311.10.3.6,1.3.6.1.4.1.2312.16.1.2    # Used to sign modules, Microsoft EKU, Linux kernel EKU (Extended Key Usage)
+nsComment               = "OpenSSL Generated Certificate"
+```
+
+Luego, se crearon las llaves privadas y publicas.
+
+![Creacion de llaves](firma/img/tp4_certificado.png)
+
+Para realizar la firma se necesitan ambas, y para "enrollar" la llave en shim se utiliza la publica (MOK.der):
+
+![Firma](firma/img/tp4_certificado2.png)
+
+Luego se reinició la maquina y se mostró la pantalla de MokManager antes de la carga de GRUB. Aqui es donde se enrollo la llave.
+
+![Enroll MOK](firma/img/enroll_mok.jpeg)
+
+![Descripcion del MOK](firma/img/descripcion.jpeg)
+
+Finalmente se firmó el modulo de kernel `mimodulo.ko`. A continuacion se muestra la ejecucion del comando `insmod` antes y despues de realizar la firma, todo esto con Secure Boot habilitado.
+
+![Firma de mimodulo.ko](firma/img/tp4_cargado.png)
+
+Se puede verificar si un módulo esta firmado observando que a la salida de `hexdump` se incluya el string "Module signature appended".
+
+![Hexdump de mimodulo.ko con firma](firma/img/tp4_firma.png)
+
 
 #### 9. Agregar evidencia de la compilación, carga y descarga de su propio módulo imprimiendo el nombre del equipo en los registros del kernel.
 
