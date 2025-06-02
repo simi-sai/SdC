@@ -8,7 +8,7 @@
 
 ## Introducción
 
-En este trabajo se realizaron investigaciones en base a lo relacionado a los modulos de kernel. Estos son fragmentos de código, al igual que los programas que se ejecutan como procesos, pero con varias diferencias en cuanto a privilegios de acceso al hardware del computador. Se plantean otros conceptos aparte que sirvieron como herramienta para la experimentación sobre estos modulos.
+En este trabajo práctico se explorarán los módulos de kernel en Linux, su importancia, y cómo pueden ser utilizados para mejorar la seguridad del sistema. Se abordarán temas como la firma de módulos, la diferencia entre programas de usuario y módulos del kernel, y la gestión de dispositivos y drivers en Linux. Además, se realizarán ejercicios prácticos para comprender mejor el funcionamiento de los módulos y su interacción con el kernel.
 
 ## Desarrollo
 
@@ -328,7 +328,7 @@ Cada lista de modulos cargado de cada integrante va a estar en su correspondient
 
 Estos módulos existen en el sistema pero no están activos (no están cargados en el kernel). Para verlos:
 
-###### 1) Buscar todos los módulos disponibles en tu sistema:
+1) Buscar todos los módulos disponibles en tu sistema:
 
 ```bash
 find /lib/modules/$(uname -r) -type f -name "*.ko*" | xargs -n1 basename | sed 's/\.ko.*$//'
@@ -341,13 +341,13 @@ find /lib/modules/$(uname -r) -type f -name "*.ko*" | xargs -n1 basename | sed '
 
 - sed 's/\.ko.\*$//': limpia la extensión (.ko, .ko.xz, etc.) para mostrar el nombre del módulo limpio, tal como aparece en lsmod.
 
-###### 2) Ver los módulos cargados actualmente:
+2) Ver los módulos cargados actualmente:
 
 ```bash
 lsmod
 ```
 
-###### 3) Dispositivos sin modulos
+3) Dispositivos sin modulos
 
 Podés intentar detectar dispositivos sin driver con
 
@@ -355,7 +355,7 @@ Podés intentar detectar dispositivos sin driver con
 dmesg | grep -i firmware
 ```
 
-###### 4) Comparacion de listas
+4) Comparacion de listas
 
 En este caso la comparacion se va a hacer a partir de modules_rodri.txt
 
@@ -560,4 +560,4 @@ El propósito principal del Secure Boot en el proceso de arranque de un sistema 
 
 ## Conclusión
 
-Se concluye que los módulos de kernel son la base del control de todo el sistema de hardware de la máquina, ya que se logró experimentar con un módulo propio y observar su comportamiento sobre los registros del kernel, ademas de insertar una firma para comprobar cómo el sistema acepta o rechaza este modulo. Esto permitió observar cómo difieren un modulo de kernel y un programa, ya que ambos tienen su espacio de memoria reservado.
+En este trabajo práctico se exploraron los módulos de kernel y su importancia en el sistema operativo Linux. Se implementaron mejoras en la seguridad del kernel mediante la firma de módulos, se diferenciaron los módulos de kernel de los programas de usuario, y se analizaron las implicancias de la carga y descarga de módulos. Además, se investigó sobre la gestión de dispositivos y drivers en Linux, así como las herramientas para monitorear y depurar el comportamiento del kernel. Finalmente, se reflexionó sobre la seguridad del sistema y las medidas necesarias para mantener un entorno seguro y confiable.
