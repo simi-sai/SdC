@@ -12,7 +12,7 @@ En este trabajo se realizaron investigaciones en base a lo relacionado a los mod
 
 ## Desarrollo
 
-### Desafio N°1
+### Desafio N°1: Mejorar la Seguridad del Kernel
 
 #### Checkinstall
 
@@ -66,7 +66,7 @@ Este y otros programas parecidos pueden evitarse mediante varias acciones:
 
 ---
 
-### Desafio N°2
+### Desafio N°2: Modulos vs Programas
 
 #### ¿Cómo empiezan y terminan unos y otros?
 
@@ -91,6 +91,85 @@ Algunas características y funciones disponibles para un programa de usuario inc
 - **Manejo de señales**: Los programas de usuario pueden recibir y manejar señales del sistema.
 - **Comunicación entre procesos (IPC)**: Pueden utilizar mecanismos como tuberías, colas de mensajes, semáforos y memoria compartida para comunicarse con otros procesos.
 
+##### Usando `strace`:
+
+Para observar las llamadas al sistema que realiza un programa de usuario, se puede utilizar la herramienta `strace`. Esta herramienta intercepta y muestra todas las syscalls que realiza un proceso.
+
+Programa en C que utiliza `printf()`:
+
+```C
+#include <stdio.h>
+
+int main()
+{
+    printf("Hello, World!\n");
+
+    return 0;
+}
+```
+
+```bash
+gcc -Wall -o printf printf.c
+strace -tt printf
+strace -c printf
+```
+
+```console
+simon@DELL-Inspiron-3505:~/Desktop/S/SdC/SdC/TP4/desafio_2$ strace -tt printf
+11:03:12.952617 execve("/usr/bin/printf", ["printf"], 0x7ffd7522a198 /* 76 vars */) = 0
+11:03:12.953472 brk(NULL)               = 0x6196bc21c000
+11:03:12.953611 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x76ec036f3000
+11:03:12.953721 access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+11:03:12.953998 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+11:03:12.954140 fstat(3, {st_mode=S_IFREG|0644, st_size=82407, ...}) = 0
+11:03:12.954306 mmap(NULL, 82407, PROT_READ, MAP_PRIVATE, 3, 0) = 0x76ec036de000
+11:03:12.954419 close(3)                = 0
+11:03:12.954534 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+11:03:12.954651 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\220\243\2\0\0\0\0\0"..., 832) = 832
+11:03:12.954766 pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+11:03:12.954883 fstat(3, {st_mode=S_IFREG|0755, st_size=2125328, ...}) = 0
+11:03:12.955016 pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+11:03:12.955130 mmap(NULL, 2170256, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x76ec03400000
+11:03:12.955231 mmap(0x76ec03428000, 1605632, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x28000) = 0x76ec03428000
+11:03:12.955350 mmap(0x76ec035b0000, 323584, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1b0000) = 0x76ec035b0000
+.
+.
+.
+(continúa con más llamadas al sistema)
+```
+
+```console
+simon@DELL-Inspiron-3505:~/Desktop/S/SdC/SdC/TP4/desafio_2$ strace -c printf
+printf: missing operand
+Try 'printf --help' for more information.
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 59,54    0,001192        1192         1           execve
+ 12,94    0,000259          25        10           mmap
+  7,94    0,000159          19         8         3 openat
+  3,05    0,000061          20         3           mprotect
+  2,65    0,000053           7         7           close
+  2,60    0,000052          10         5           fstat
+  2,20    0,000044          44         1           munmap
+  2,15    0,000043          10         4           write
+  1,75    0,000035          11         3           brk
+  1,40    0,000028           9         3           read
+  1,25    0,000025          25         1         1 access
+  0,65    0,000013           6         2           pread64
+  0,45    0,000009           9         1           getrandom
+  0,35    0,000007           7         1           prlimit64
+  0,35    0,000007           7         1           rseq
+  0,25    0,000005           5         1           arch_prctl
+  0,25    0,000005           5         1           set_tid_address
+  0,25    0,000005           5         1           set_robust_list
+------ ----------- ----------- --------- --------- ----------------
+100,00    0,002002          37        54         4 total
+```
+
+Ambas salidas de `strace` revelan que incluso un programa simple como `printf` requiere una intensa interacción con el kernel de Linux. El `strace -tt` muestra una cronología detallada de llamadas al sistema (*syscalls*) para tareas como la carga y ejecución del programa (*execve*), la gestión de memoria (`mmap`, `brk`), la apertura y lectura de archivos esenciales (como la biblioteca estándar de C, `libc.so.6`, y archivos de localización), y la escritura de la salida en pantalla (*write*). Esto demuestra que el sistema operativo orquesta minuciosamente cada paso del proceso, desde la inicialización hasta la finalización.
+
+Por otro lado, el `strace -c` cuantifica estas interacciones, destacando que la inicialización y la carga de recursos son las operaciones más costosas en términos de tiempo y cantidad de syscalls. `execve`, `mmap` y `openat` dominan las estadísticas, lo que subraya el significativo trabajo del kernel para establecer el entorno de ejecución de un programa, incluyendo la carga de bibliotecas compartidas que proporcionan la funcionalidad de alto nivel. En esencia, strace ilustra cómo los programas de usuario dependen fundamentalmente del kernel para realizar hasta las tareas más básicas.
+
 ##### Módulo del kernel (Kernel Space)
 
 Un módulo del kernel opera en el espacio del kernel (kernel space), un entorno privilegiado donde reside el núcleo del sistema operativo.
@@ -104,6 +183,12 @@ Algunas características y funciones disponibles para un módulo del kernel incl
 - **Manejo de procesos y tareas**: Pueden crear y gestionar procesos y tareas dentro del kernel.
 - **Exportar simbolos**: Pueden exportar funciones y variables para que otros módulos del kernel puedan utilizarlas.
 
+##### Contenido de `/proc/kallsyms`
+
+El archivo `/proc/kallsyms` en sistemas Linux es una interfaz del kernel que expone las direcciones y los nombres de todos los símbolos públicos (funciones y variables) exportados por el kernel en ejecución y sus módulos cargados. 
+
+Básicamente, funciona como un mapa simbólico del kernel, proporcionando una vista detallada de los componentes internos del sistema. La información contenida en este archivo es crucial para la depuración del kernel, el análisis de rendimiento y la ingeniería inversa, ya que permite a los desarrolladores y administradores relacionar direcciones de memoria con nombres de funciones comprensibles, lo que facilita la identificación de errores o cuellos de botella.
+
 #### Espacio de Usuario vs Espacio del Kernel
 
 || Espacio de Usuario | Espacio del Kernel |
@@ -113,17 +198,14 @@ Algunas características y funciones disponibles para un módulo del kernel incl
 | **Memoria** | Cada proceso tiene su propio espacio de direcciones virtuales, lo que proporciona aislamiento entre procesos. | Comparte el mismo espacio de direcciones, lo que permite una comunicación más eficiente pero con mayor riesgo de corrupción de memoria. |
 | **Funciones disponibles** | Utiliza bibliotecas de usuario y syscalls para realizar operaciones. | Utiliza funciones del kernel para realizar operaciones, como `printk`, `kmalloc`, etc. |
 
-#### Espacio de Datos (Data Segment) y Espacio de Nombres (namespace)
+#### Espacio de Datos (Data Segment) y Espacio de Codigo (Text Segment) para Usuario y Kernel
 
-|| Espacio de Datos (Data Segment) | Espacio de Nombres (namespace) |
-|---|------------------|--------------------|
-| **Concepto Principal** | Región de la memoria virtual de un proceso. | Mecanismo de aislamiento a nivel de kernel. |
-| **Contenido** | Contiene variables globales y estáticas, así como datos inicializados y no inicializados. | Agrupa recursos del sistema (procesos, archivos, redes) para proporcionar un entorno aislado. |
-| **Propósito** | Almacenar datos persistentes durante la ejecución del programa. | Aislar recursos entre diferentes procesos o grupos de procesos. |
-| **Ambito** | Específico de cada proceso, no compartido entre ellos. | Puede ser compartido entre procesos que pertenecen al mismo espacio de nombres. |
-| **Gestión** | Gestionado por el sistema operativo y el compilador, asignando memoria al inicio del programa. | Gestionado por el kernel a través de syscalls específicas como `clone()`, `unshare()`, `setns()`. |
-| **Visibilidad** | Las variables en el espacio de datos son visibles para el proceso que las define. | Los recursos en un espacio de nombres son visibles solo para los procesos que pertenecen a ese espacio de nombres. |
-| **Impacto en el sistema** | No afecta a otros procesos, ya que cada uno tiene su propio espacio de datos. | Un error en la configuración o uso de un espacio de nombres puede afectar el aislamiento, la seguridad o el funcionamiento de los procesos dentro de él. |
+El **espacio de datos** y el **espacio de código** son dos áreas importantes en la memoria de un proceso, tanto en el espacio de usuario como en el espacio del kernel.
+
+|| **Espacio de Usuario** | **Espacio del Kernel** |
+|---|---------------------|--------------------|
+| **Espacio de Datos** | Contiene variables globales y estáticas, así como datos dinámicos asignados en tiempo de ejecución (heap). | Contiene estructuras de datos del kernel, como tablas de procesos, listas de dispositivos, etc. |
+| **Espacio de Código** | Contiene el código ejecutable del programa, incluyendo funciones y bibliotecas utilizadas. | Contiene el código del kernel y los módulos cargados, incluyendo controladores de dispositivos y subsistemas del kernel. |
 
 #### Drivers y contenido de `/dev`
 
@@ -136,120 +218,6 @@ Se dividen en:
 - **Dispositivos de Bloque**: Para acceso estructurado (ej., discos duros como `/dev/sda`).
 - **Dispositivos de Carácter**: Para flujos de datos (ej., terminales como `/dev/tty`).
 - **Pseudodispositivos**: Funcionalidades del kernel sin hardware físico (ej., `/dev/null` para descartar datos).
-
-#### Ejemplo de `strace`
-
-Programa en C que utiliza `printf()`:
-
-```C
-#include <stdio.h>
-
-int main()
-{
-    printf("Hello, World!\n");
-}
-```
-
-```bash
-gcc -o printf.c printf -Wall
-strace -tt printf
-strace -c printf
-```
-
-```console
-simon@DELL-Inspiron-3505:~/Desktop/S/SdC/SdC/TP4/desafio_2$ strace -tt printf
-22:32:30.527832 execve("/usr/bin/printf", ["printf"], 0x7fffa077af48 /* 76 vars */) = 0
-22:32:30.530917 brk(NULL)               = 0x63cc26f1e000
-22:32:30.531090 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7790775a4000
-22:32:30.531453 access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
-22:32:30.531804 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
-22:32:30.532015 fstat(3, {st_mode=S_IFREG|0644, st_size=82407, ...}) = 0
-22:32:30.532134 mmap(NULL, 82407, PROT_READ, MAP_PRIVATE, 3, 0) = 0x77907758f000
-22:32:30.532290 close(3)                = 0
-22:32:30.532407 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
-22:32:30.532533 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\220\243\2\0\0\0\0\0"..., 832) = 832
-22:32:30.532687 pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
-22:32:30.532833 fstat(3, {st_mode=S_IFREG|0755, st_size=2125328, ...}) = 0
-22:32:30.532972 pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
-22:32:30.533115 mmap(NULL, 2170256, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x779077200000
-22:32:30.533276 mmap(0x779077228000, 1605632, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x28000) = 0x779077228000
-22:32:30.533483 mmap(0x7790773b0000, 323584, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1b0000) = 0x7790773b0000
-22:32:30.533628 mmap(0x7790773ff000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1fe000) = 0x7790773ff000
-22:32:30.533814 mmap(0x779077405000, 52624, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x779077405000
-22:32:30.533973 close(3)                = 0
-22:32:30.534106 mmap(NULL, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x77907758c000
-22:32:30.534239 arch_prctl(ARCH_SET_FS, 0x77907758c740) = 0
-22:32:30.534350 set_tid_address(0x77907758ca10) = 11940
-22:32:30.534436 set_robust_list(0x77907758ca20, 24) = 0
-22:32:30.534526 rseq(0x77907758d060, 0x20, 0, 0x53053053) = 0
-22:32:30.534704 mprotect(0x7790773ff000, 16384, PROT_READ) = 0
-22:32:30.534827 mprotect(0x63cc20978000, 4096, PROT_READ) = 0
-22:32:30.534902 mprotect(0x7790775e2000, 8192, PROT_READ) = 0
-22:32:30.535000 prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
-22:32:30.535136 munmap(0x77907758f000, 82407) = 0
-22:32:30.535282 getrandom("\x6c\x16\xc5\x91\x3f\x28\x09\x9b", 8, GRND_NONBLOCK) = 8
-22:32:30.535391 brk(NULL)               = 0x63cc26f1e000
-22:32:30.535482 brk(0x63cc26f3f000)     = 0x63cc26f3f000
-22:32:30.535577 openat(AT_FDCWD, "/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3
-22:32:30.535724 fstat(3, {st_mode=S_IFREG|0644, st_size=8398816, ...}) = 0
-22:32:30.535829 mmap(NULL, 8398816, PROT_READ, MAP_PRIVATE, 3, 0) = 0x779076800000
-22:32:30.535992 close(3)                = 0
-22:32:30.536283 openat(AT_FDCWD, "/usr/share/locale/locale.alias", O_RDONLY|O_CLOEXEC) = 3
-22:32:30.536447 fstat(3, {st_mode=S_IFREG|0644, st_size=2996, ...}) = 0
-22:32:30.536585 read(3, "# Locale name alias data base.\n#"..., 4096) = 2996
-22:32:30.536729 read(3, "", 4096)       = 0
-22:32:30.536820 close(3)                = 0
-22:32:30.536911 openat(AT_FDCWD, "/usr/share/locale/en_US/LC_MESSAGES/coreutils.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
-22:32:30.537021 openat(AT_FDCWD, "/usr/share/locale/en/LC_MESSAGES/coreutils.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
-22:32:30.537126 openat(AT_FDCWD, "/usr/share/locale-langpack/en_US/LC_MESSAGES/coreutils.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
-22:32:30.537516 openat(AT_FDCWD, "/usr/share/locale-langpack/en/LC_MESSAGES/coreutils.mo", O_RDONLY) = 3
-22:32:30.537762 fstat(3, {st_mode=S_IFREG|0644, st_size=613, ...}) = 0
-22:32:30.537851 mmap(NULL, 613, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7790775a3000
-22:32:30.537956 close(3)                = 0
-22:32:30.538061 write(2, "printf: ", 8printf: ) = 8
-22:32:30.538147 write(2, "missing operand", 15missing operand) = 15
-22:32:30.538225 write(2, "\n", 1
-)       = 1
-22:32:30.538310 write(2, "Try 'printf --help' for more inf"..., 42Try 'printf --help' for more information.
-) = 42
-22:32:30.538391 close(1)                = 0
-22:32:30.538458 close(2)                = 0
-22:32:30.538549 exit_group(1)           = ?
-22:32:30.539101 +++ exited with 1 +++
-[ble: exit 1]
-```
-
-```console
-simon@DELL-Inspiron-3505:~/Desktop/S/SdC/SdC/TP4/desafio_2$ strace -c printf
-printf: missing operand
-Try 'printf --help' for more information.
-% time     seconds  usecs/call     calls    errors syscall
------- ----------- ----------- --------- --------- ----------------
- 52,60    0,000970         970         1           execve
- 11,93    0,000220          22        10           mmap
- 11,12    0,000205          25         8         3 openat
-  4,56    0,000084          21         4           write
-  4,23    0,000078          11         7           close
-  3,15    0,000058          11         5           fstat
-  2,82    0,000052          17         3           mprotect
-  2,33    0,000043          14         3           read
-  1,63    0,000030          10         3           brk
-  1,57    0,000029          29         1           munmap
-  1,25    0,000023          23         1         1 access
-  0,65    0,000012           6         2           pread64
-  0,49    0,000009           9         1           getrandom
-  0,38    0,000007           7         1           arch_prctl
-  0,38    0,000007           7         1           prlimit64
-  0,33    0,000006           6         1           set_tid_address
-  0,33    0,000006           6         1           rseq
-  0,27    0,000005           5         1           set_robust_list
------- ----------- ----------- --------- --------- ----------------
-100,00    0,001844          34        54         4 total
-```
-
-Ambas salidas de `strace` revelan que incluso un programa simple como `printf` requiere una intensa interacción con el kernel de Linux. El `strace -tt` muestra una cronología detallada de llamadas al sistema (*syscalls*) para tareas como la carga y ejecución del programa (*execve*), la gestión de memoria (`mmap`, `brk`), la apertura y lectura de archivos esenciales (como la biblioteca estándar de C, libc.so.6, y archivos de localización), y la escritura de la salida en pantalla (*write*). Esto demuestra que el sistema operativo orquesta minuciosamente cada paso del proceso, desde la inicialización hasta la finalización.
-
-Por otro lado, el `strace -c` cuantifica estas interacciones, destacando que la inicialización y la carga de recursos son las operaciones más costosas en términos de tiempo y cantidad de syscalls. execve, mmap y openat dominan las estadísticas, lo que subraya el significativo trabajo del kernel para establecer el entorno de ejecución de un programa, incluyendo la carga de bibliotecas compartidas que proporcionan la funcionalidad de alto nivel. En esencia, strace ilustra cómo los programas de usuario dependen fundamentalmente del kernel para realizar hasta las tareas más básicas.
 
 ---
 

@@ -1,0 +1,58 @@
+11:03:12.952617 execve("/usr/bin/printf", ["printf"], 0x7ffd7522a198 /* 76 vars */) = 0
+11:03:12.953472 brk(NULL)               = 0x6196bc21c000
+11:03:12.953611 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x76ec036f3000
+11:03:12.953721 access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+11:03:12.953998 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+11:03:12.954140 fstat(3, {st_mode=S_IFREG|0644, st_size=82407, ...}) = 0
+11:03:12.954306 mmap(NULL, 82407, PROT_READ, MAP_PRIVATE, 3, 0) = 0x76ec036de000
+11:03:12.954419 close(3)                = 0
+11:03:12.954534 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+11:03:12.954651 read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\220\243\2\0\0\0\0\0"..., 832) = 832
+11:03:12.954766 pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+11:03:12.954883 fstat(3, {st_mode=S_IFREG|0755, st_size=2125328, ...}) = 0
+11:03:12.955016 pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+11:03:12.955130 mmap(NULL, 2170256, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x76ec03400000
+11:03:12.955231 mmap(0x76ec03428000, 1605632, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x28000) = 0x76ec03428000
+11:03:12.955350 mmap(0x76ec035b0000, 323584, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1b0000) = 0x76ec035b0000
+11:03:12.955468 mmap(0x76ec035ff000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1fe000) = 0x76ec035ff000
+11:03:12.955581 mmap(0x76ec03605000, 52624, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x76ec03605000
+11:03:12.955698 close(3)                = 0
+11:03:12.955809 mmap(NULL, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x76ec036db000
+11:03:12.955912 arch_prctl(ARCH_SET_FS, 0x76ec036db740) = 0
+11:03:12.956105 set_tid_address(0x76ec036dba10) = 13874
+11:03:12.956205 set_robust_list(0x76ec036dba20, 24) = 0
+11:03:12.956305 rseq(0x76ec036dc060, 0x20, 0, 0x53053053) = 0
+11:03:12.956485 mprotect(0x76ec035ff000, 16384, PROT_READ) = 0
+11:03:12.956599 mprotect(0x6196ab466000, 4096, PROT_READ) = 0
+11:03:12.956697 mprotect(0x76ec03731000, 8192, PROT_READ) = 0
+11:03:12.956817 prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+11:03:12.956944 munmap(0x76ec036de000, 82407) = 0
+11:03:12.957115 getrandom("\x51\x7b\xd2\x24\xab\xca\x13\xbe", 8, GRND_NONBLOCK) = 8
+11:03:12.957238 brk(NULL)               = 0x6196bc21c000
+11:03:12.957368 brk(0x6196bc23d000)     = 0x6196bc23d000
+11:03:12.957528 openat(AT_FDCWD, "/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3
+11:03:12.957692 fstat(3, {st_mode=S_IFREG|0644, st_size=8398816, ...}) = 0
+11:03:12.957811 mmap(NULL, 8398816, PROT_READ, MAP_PRIVATE, 3, 0) = 0x76ec02a00000
+11:03:12.957931 close(3)                = 0
+11:03:12.958239 openat(AT_FDCWD, "/usr/share/locale/locale.alias", O_RDONLY|O_CLOEXEC) = 3
+11:03:12.958402 fstat(3, {st_mode=S_IFREG|0644, st_size=2996, ...}) = 0
+11:03:12.958538 read(3, "# Locale name alias data base.\n#"..., 4096) = 2996
+11:03:12.958718 read(3, "", 4096)       = 0
+11:03:12.958855 close(3)                = 0
+11:03:12.959023 openat(AT_FDCWD, "/usr/share/locale/en_US/LC_MESSAGES/coreutils.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+11:03:12.959166 openat(AT_FDCWD, "/usr/share/locale/en/LC_MESSAGES/coreutils.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+11:03:12.959288 openat(AT_FDCWD, "/usr/share/locale-langpack/en_US/LC_MESSAGES/coreutils.mo", O_RDONLY) = -1 ENOENT (No such file or directory)
+11:03:12.959412 openat(AT_FDCWD, "/usr/share/locale-langpack/en/LC_MESSAGES/coreutils.mo", O_RDONLY) = 3
+11:03:12.959572 fstat(3, {st_mode=S_IFREG|0644, st_size=613, ...}) = 0
+11:03:12.959729 mmap(NULL, 613, PROT_READ, MAP_PRIVATE, 3, 0) = 0x76ec036f2000
+11:03:12.959881 close(3)                = 0
+11:03:12.960045 write(2, "printf: ", 8printf: ) = 8
+11:03:12.960207 write(2, "missing operand", 15missing operand) = 15
+11:03:12.960403 write(2, "\n", 1
+)       = 1
+11:03:12.960523 write(2, "Try 'printf --help' for more inf"..., 42Try 'printf --help' for more information.
+) = 42
+11:03:12.960640 close(1)                = 0
+11:03:12.960735 close(2)                = 0
+11:03:12.960852 exit_group(1)           = ?
+11:03:12.961190 +++ exited with 1 +++

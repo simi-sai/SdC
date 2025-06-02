@@ -1,0 +1,24 @@
+printf: missing operand
+Try 'printf --help' for more information.
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 59,54    0,001192        1192         1           execve
+ 12,94    0,000259          25        10           mmap
+  7,94    0,000159          19         8         3 openat
+  3,05    0,000061          20         3           mprotect
+  2,65    0,000053           7         7           close
+  2,60    0,000052          10         5           fstat
+  2,20    0,000044          44         1           munmap
+  2,15    0,000043          10         4           write
+  1,75    0,000035          11         3           brk
+  1,40    0,000028           9         3           read
+  1,25    0,000025          25         1         1 access
+  0,65    0,000013           6         2           pread64
+  0,45    0,000009           9         1           getrandom
+  0,35    0,000007           7         1           prlimit64
+  0,35    0,000007           7         1           rseq
+  0,25    0,000005           5         1           arch_prctl
+  0,25    0,000005           5         1           set_tid_address
+  0,25    0,000005           5         1           set_robust_list
+------ ----------- ----------- --------- --------- ----------------
+100,00    0,002002          37        54         4 total
