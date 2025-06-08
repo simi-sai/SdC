@@ -12,9 +12,8 @@ def set_signal(idx):
 
 # Leer puerto seleccionado
 def read_sample():
-    with open(DEVICE, "rb") as f:
-        # Lectura y decodificacion en el CDD
-        val = f.read(32).decode()
+    with open(DEVICE, "r") as f:
+        val = f.readline().strip()
     return int(val)
 
 
@@ -44,4 +43,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
