@@ -1,4 +1,4 @@
-obj-m += simple_driver.o
+obj-m += signal_driver.o
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
