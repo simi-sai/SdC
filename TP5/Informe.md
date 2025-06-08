@@ -56,6 +56,12 @@ El Sistema Operativo utiliza el CDD para:
 
 Para acceder a estos dispositivos, se utilizan los **Character Device Files (CDF)**, que son archivos especiales en el sistema de archivos que representan estos dispositivos. Estos archivos permiten a las aplicaciones interactuar con los dispositivos de carácter como si fueran archivos normales, utilizando las llamadas al sistema estándar para leer y escribir datos. En linux estos archivos se encuentran en el directorio `/dev/`.
 
+Una forma más visual de entender CDF es pensarlo como un modelo de capas, donde el CDF actúa como una interfaz entre el espacio de usuario y el espacio del kernel, permitiendo que las aplicaciones interactúen con los dispositivos de manera abstracta y uniforme:
+
+<div class="image" align="center">
+    <img src="Imagenes/CDF.webp"/>
+</div>
+
 #### Par de Números <Major, Minor>
 
 El vínculo entre un dispositivo (CDF) y su controlador (Device Driver) en sistemas operativos como Linux se establece a través de un par de números conocidos como **Major** y **Minor**. Estos números son utilizados por el kernel para identificar de manera única cada dispositivo y su controlador asociado. Este par de números se puede observar mediante los comandos:
@@ -76,7 +82,7 @@ En este caso, el número `4` es el **Major** y `64` es el **Minor**, formando el
 
 ---
 
-### Construcción de un CDD para Sensar Señales
+### DESAFIO: Construcción de un CDD para Sensar Señales
 
 Debemos desarrollar un Character Device Driver (CDD) que genere dos señales periódicas con un periodo de 1 segundo. Luego una aplicación a nivel de usuario deberá leer una de las dos señales y graficarla en función del tiempo. La aplicación tambien debe poder indicarle al CDD cuál de las dos señales leer. 
 
