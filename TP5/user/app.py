@@ -1,7 +1,7 @@
 import time
+import matplotlib.pyplot as plt
 
 DEVICE = "/dev/signal_driver"
-
 
 # Seleccionar puerto a leer
 def set_signal(idx):
