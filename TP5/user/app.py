@@ -20,7 +20,11 @@ def read_sample():
 # Plot
 def plot_loop():
     # El usuario decide aquí cuál señal leer (0 o 1):
-    sel = int(input("¿Leer señal 0 o 1? Presione Ctrl+C para salir.\n"))
+    sel = int(
+        input(
+            "¿Leer señal 1 (cuadrada) o 2 (triangular)? Presione Ctrl+C para salir.\n"
+        )
+    )
     set_signal(sel)
     ts = 0
     print(f"Señal a leer: {sel}. Presione Ctrl+C para leer otra señal.")
