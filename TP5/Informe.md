@@ -8,6 +8,9 @@
 
 ## Introducción
 
+>[!NOTE]
+> Completar
+
 ## Desarrollo
 
 ### Driver
@@ -16,6 +19,8 @@ Un driver (o *controlador*) es un programa que permite la comunicación entre el
 
 Los drivers son generalmente específicos para cada tipo de dispositivo y sistema operativo. Pueden ser proporcionados por el fabricante del hardware o desarrollados por la comunidad de código abierto. Los drivers pueden ser de espacio de usuario o de espacio del kernel, dependiendo de cómo interactúan con el sistema operativo.
 
+---
+
 ### Device Controller
 
 Un device controller (o *controlador de dispositivo*) es un componente electrónico físico, a menudo un chip o una placa de circuito, que se encuentra directamente en el dispositivo de hardware o en la placa base de la computadora. Su función principal es gestionar y controlar las operaciones del dispositivo de hardware al que está asociado. Esencialmente, el device controller maneja las complejidades de bajo nivel del hardware, liberando al procesador principal de esta tarea y permitiendo que el sistema operativo interactúe con el dispositivo a un nivel más abstracto.
@@ -23,6 +28,8 @@ Un device controller (o *controlador de dispositivo*) es un componente electrón
 #### Device Drivers
 
 Los device drivers (o *controlador de dispositivos*) son programas que permiten al sistema operativo comunicarse con los **device controllers**. Estos drivers traducen las solicitudes del sistema operativo en comandos que el device controller puede entender y viceversa. Los device drivers son esenciales para el funcionamiento de los dispositivos de hardware, ya que permiten que el sistema operativo y las aplicaciones interactúen con ellos de manera efectiva.
+
+---
 
 ### Bus Driver
 
@@ -34,6 +41,8 @@ Las responsabilidades principales de un bus driver incluyen:
 - **Gestión del Plug and Play (PnP):** Responder a eventos como la conexión o desconexión de dispositivos y la asignación de recursos (como direcciones de memoria o interrupciones) a esos dispositivos.
 - **Arbitraje y Multiplexación:** En buses donde varios dispositivos pueden intentar comunicarse al mismo tiempo, el bus driver se encarga de arbitrar el acceso para evitar colisiones y asegurar una comunicación ordenada.
 - **Manejo genérico de dispositivos:** Proporcionar una interfaz común para que el sistema operativo y otros drivers puedan interactuar con los dispositivos conectados a ese bus, sin tener que conocer los detalles específicos de cada dispositivo individual.
+
+---
 
 ### CDD: Character Device Driver
 
@@ -53,7 +62,7 @@ El vínculo entre un dispositivo (CDF) y su controlador (Device Driver) en siste
 
 ```bash
 ls -l /dev/ | grep "^c" # Para listar los archivos de dispositivo de carácter
-cat /proc/devices #Para ver los números Major
+cat /proc/devices # Para ver los números Major
 ls -la /dev/hda? /dev/sda? /dev/ttyS? # Para ver los números Major y Minor de dispositivos específicos
 ```
 
@@ -104,3 +113,6 @@ Las modificaciones específicas realizadas incluyen:
 
 
 ## Conclusion
+
+>[!NOTE]
+> Completar
