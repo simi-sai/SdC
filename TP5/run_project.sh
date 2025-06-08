@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # === Configuración ===
+PROJECT_DIR="$(pwd)"
 CDD_NAME="signal_driver"
 CDD_DIR="CDD"
 USER_APP="user/app.py"
-MAJOR_FILE="/dev/$CDD_NAME"
+DEVICE_FILE="/dev/$CDD_NAME"
 MODULE_NAME="signal_driver.ko"
 
 # === Paso 1: Compilar el módulo ===
@@ -35,23 +36,25 @@ if [ $? -ne 0 ]; then
 fi
 
 # === Paso 4: Verificación del archivo de dispositivo ===
-if [ ! -e "$MAJOR_FILE" ]; then
-  echo "[!] Esperando que udev cree /dev/$CDD_NAME..."
+if [ ! -e "$DEVICE_FILE" ]; then
+  echo "[!] Esperando que udev cree $DEVICE_FILE..."
   sleep 1
 fi
 
-if [ ! -e "$MAJOR_FILE" ]; then
-  echo "[ERROR] No se encontró /dev/$CDD_NAME. ¿udev está funcionando?"
+if [ ! -e "$DEVICE_FILE" ]; then
+  echo "[ERROR] No se encontró $DEVICE_FILE. ¿udev está funcionando?"
   exit 1
 fi
 
 # === Paso 5: Asegurar permisos adecuados ===
-sudo chmod 666 "$MAJOR_FILE"
-
-cd - >/dev/null
+sudo chmod 666 "$DEVICE_FILE"
 
 # === Paso 6: Ejecutar la app Python ===
 echo "[+] Ejecutando app de usuario..."
+cd "$PROJECT_DIR" || exit 1
 python3 "$USER_APP"
 
+# === Paso 7: Limpieza final del módulo ===
+echo "[+] Limpiando archivos generados..."
+cd "$CDD_DIR" || exit 1
 make clean
