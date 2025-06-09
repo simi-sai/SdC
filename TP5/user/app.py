@@ -1,5 +1,4 @@
 import time
-import matplotlib.pyplot as plt
 
 DEVICE = "/dev/signal_driver"
 
