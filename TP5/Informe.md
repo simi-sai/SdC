@@ -8,8 +8,9 @@
 
 ## Introducción
 
->[!NOTE]
-> Completar
+En este informe se abordó el diseño e implementación de *device drivers*, con un enfoque concreto en los *character device drivers*. Partiendo de una revisión de fundamentos teóricos—arquitectura de kernel, registro de dispositivos y mecanismos de comunicación entre espacio de usuario y espacio de kernel—se planteó el desarrollo de un controlador capaz de capturar señales en tiempo real.
+
+El objetivo principal consistió en elaborar un character device driver que lee señales y los transfiere, mediante llamadas de sistema, a una aplicación de espacio de usuario. Esta aplicación además realiza un gráfico temporal de las señales recibidas.
 
 ## Desarrollo
 
@@ -23,11 +24,11 @@ Los drivers son generalmente específicos para cada tipo de dispositivo y sistem
 
 ### Device Controller
 
-Un device controller (o *controlador de dispositivo*) es un componente electrónico físico, a menudo un chip o una placa de circuito, que se encuentra directamente en el dispositivo de hardware o en la placa base de la computadora. Su función principal es gestionar y controlar las operaciones del dispositivo de hardware al que está asociado. Esencialmente, el device controller maneja las complejidades de bajo nivel del hardware, liberando al procesador principal de esta tarea y permitiendo que el sistema operativo interactúe con el dispositivo a un nivel más abstracto.
+Un device controller (o *controlador de dispositivo*) es un componente electrónico físico, a menudo un chip o una placa de circuito, que se encuentra directamente en el dispositivo de hardware o en la placa base de la computadora. Su función principal es gestionar y controlar las operaciones del dispositivo de hardware al que está asociado. Esencialmente, el device controller maneja las complejidades de bajo nivel del hardware, liberando al procesador principal de esta tarea.
 
 #### Device Drivers
 
-Los device drivers (o *controlador de dispositivos*) son programas que permiten al sistema operativo comunicarse con los **device controllers**. Estos drivers traducen las solicitudes del sistema operativo en comandos que el device controller puede entender y viceversa. Los device drivers son esenciales para el funcionamiento de los dispositivos de hardware, ya que permiten que el sistema operativo y las aplicaciones interactúen con ellos de manera efectiva.
+Los device drivers son programas que permiten al sistema operativo comunicarse con los **device controllers**. Estos drivers traducen las solicitudes del sistema operativo en comandos que el device controller puede entender y viceversa. Los device drivers son esenciales para el funcionamiento de los dispositivos de hardware, ya que permiten que el sistema operativo interactúe con el dispositivo a un nivel más abstracto.
 
 ---
 
@@ -52,7 +53,7 @@ El Sistema Operativo utiliza el CDD para:
 
 - **Leer datos:** Cuando se escribe en un teclado, el CDD lee cada carácter y lo pasa al sistema operativo, que luego lo envía a la aplicación en uso.
 - **Escribir datos:** Cuando una aplicación envía datos a un puerto serie o a una impresora, el CDD traduce esos datos a las señales específicas que el hardware entiende, enviándolos carácter por carácter.
-- **Controlar operaciones específicas del dispositivo:** Los CDD a menudo incluyen funciones especializadas (como `ioctl` en sistemas tipo Unix) que permiten a las aplicaciones realizar controles específicos del dispositivo que no son solo lectura o escritura de bytes. Por ejemplo, cambiar la velocidad de transmisión (baudios) de un puerto serie.
+- **Controlar operaciones específicas del dispositivo:** Los CDD a menudo incluyen funciones especializadas (como `ioctl` en sistemas tipo Unix) que permiten a las aplicaciones realizar otro tipo de controles que no son solo lectura o escritura de bytes. Por ejemplo, cambiar la velocidad de transmisión (baudios) de un puerto serie.
 
 Para acceder a estos dispositivos, se utilizan los **Character Device Files (CDF)**, que son archivos especiales en el sistema de archivos que representan estos dispositivos. Estos archivos permiten a las aplicaciones interactuar con los dispositivos de carácter como si fueran archivos normales, utilizando las llamadas al sistema estándar para leer y escribir datos. En linux estos archivos se encuentran en el directorio `/dev/`.
 
@@ -64,7 +65,7 @@ Una forma más visual de entender CDF es pensarlo como un modelo de capas, donde
 
 #### Par de Números <Major, Minor>
 
-El vínculo entre un dispositivo (CDF) y su controlador (Device Driver) en sistemas operativos como Linux se establece a través de un par de números conocidos como **Major** y **Minor**. Estos números son utilizados por el kernel para identificar de manera única cada dispositivo y su controlador asociado. Este par de números se puede observar mediante los comandos:
+El vínculo entre un dispositivo (CDF) y su controlador (Device Driver) se establece a través de un par de números conocidos como **Major** y **Minor**. Estos números son utilizados por el kernel para identificar de manera única cada dispositivo y su controlador asociado. Este par de números se puede observar mediante los comandos:
 
 ```bash
 ls -l /dev/ | grep "^c" # Para listar los archivos de dispositivo de carácter
@@ -84,9 +85,11 @@ En este caso, el número `4` es el **Major** y `64` es el **Minor**, formando el
 
 ### DESAFIO: Construcción de un CDD para Sensar Señales
 
-Debemos desarrollar un Character Device Driver (CDD) que genere dos señales periódicas con un periodo de 1 segundo. Luego una aplicación a nivel de usuario deberá leer una de las dos señales y graficarla en función del tiempo. La aplicación tambien debe poder indicarle al CDD cuál de las dos señales leer. 
+Se desarrolló un Character Device Driver (CDD) que genera dos señales periódicas con un periodo de 1 segundo. Luego se implementó una aplicación a nivel de usuario que lee una de las dos señales y la grafica en función del tiempo. La aplicación tambien puede indicarle al CDD cuál de las dos señales leer. 
 
-Las correcciones de escalas de las mediciones, de ser necesario, se harán a nivel de usuario. Los gráficos de la señal deben indicar el tipo de señal que se está sensando, unidades en abscisas y tiempo en ordenadas. Cuando se cambie de señal el gráfico se debe "resetear" y acomodar a la nueva medición.
+Las correcciones de escalas de las mediciones, se realizan a nivel de usuario. Los gráficos de la señal indican el tipo de señal que se está sensando, con unidades en abscisas y tiempo en ordenadas. Cuando se cambia de señal el gráfico se "resetea" y acomoda a la nueva medición.
+
+La idea original de este trabajo era sensar señales de pines GPIO. Para ello se trató de emular una Raspberry Pi en QEMU, sin embargo esto no dio resultado, por lo que se optó por desarrollar un CDD que genere las señales.
 
 #### Paso 1: Estructura básica del módulo
 
@@ -120,5 +123,4 @@ Las modificaciones específicas realizadas incluyen:
 
 ## Conclusion
 
->[!NOTE]
-> Completar
+El resultado de este trabajo consistió, por un lado, en un controlador de dispositivo de caracter capaz de generar dos señales variables en el tiempo y de enviar estos valores, un byte a la vez. Por otro lado, también se logró desarrollar una aplicación de capa superior que representa gráficamente una de las dos señales, según elección del usuario. Se plantea como posible mejora la adaptación de este driver para la detección de señales que ingresan por pines GPIO en un sistema embebido como Raspberry Pi.

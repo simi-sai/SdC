@@ -27,7 +27,26 @@ if lsmod | grep -q "$CDD_NAME"; then
   sudo rmmod "$CDD_NAME"
 fi
 
-# === Paso 3: Insertar módulo nuevo ===
+# === Paso 3: Detectar Secure Boot y firmar el módulo si es necesario ===
+if ! command -v mokutil >/dev/null 2>&1; then
+  echo "[ERROR] mokutil no está instalado. No se puede verificar Secure Boot."
+  exit 1
+fi
+
+secureboot_status=$(mokutil --sb-state 2>/dev/null | grep -i 'SecureBoot enabled')
+if [ -n "$secureboot_status" ]; then
+  echo "[+] Secure Boot está ACTIVADO."
+  echo "[+] Firmando el módulo con MOK.priv y MOK.der..."
+  sudo /usr/src/linux-headers-$(uname -r)/scripts/sign-file sha256 MOK.priv MOK.der "$MODULE_NAME"
+  if [ $? -ne 0 ]; then
+    echo "[ERROR] Falló la firma del módulo"
+    exit 1
+  fi
+else
+  echo "[+] Secure Boot NO está activado. No es necesario firmar el módulo."
+fi
+
+# === Paso 4: Insertar módulo nuevo ===
 echo "[+] Insertando módulo..."
 sudo insmod "$MODULE_NAME"
 if [ $? -ne 0 ]; then
@@ -35,7 +54,7 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# === Paso 4: Verificación del archivo de dispositivo ===
+# === Paso 5: Verificación del archivo de dispositivo ===
 if [ ! -e "$DEVICE_FILE" ]; then
   echo "[!] Esperando que udev cree $DEVICE_FILE..."
   sleep 1
@@ -46,15 +65,15 @@ if [ ! -e "$DEVICE_FILE" ]; then
   exit 1
 fi
 
-# === Paso 5: Asegurar permisos adecuados ===
+# === Paso 6: Asegurar permisos adecuados ===
 sudo chmod 666 "$DEVICE_FILE"
 
-# === Paso 6: Ejecutar la app Python ===
+# === Paso 7: Ejecutar la app Python ===
 echo "[+] Ejecutando app de usuario..."
 cd "$PROJECT_DIR" || exit 1
 python3 "$USER_APP"
 
-# === Paso 7: Limpieza final del módulo ===
+# === Paso 8: Limpieza final del módulo ===
 echo "[+] Limpiando archivos generados..."
 cd "$CDD_DIR" || exit 1
 make clean
