@@ -132,28 +132,25 @@ La aplicación de espacio de usuario se encarga de:
 
 #### Paso 5: Pruebas y Verificación
 
-Para verificar el correcto funcionamiento del driver y la aplicación:
+Para verificar el correcto funcionamiento del driver y la aplicación, es suficiente con ejecutar el script `run_program.sh`. Lo que hace este script es ejecutar paso a paso:
 
-1. Se compila el módulo del kernel:
-
-Para realizar este paso, se debe ejecutar primero el Makefile:
-
-```bash
-cd CDD
-make
-cd ..
-```
-
-2. Se carga el módulo en el kernel con nuestro script:
+1. Compilar el módulo
+2. Remover el módulo si ya está cargado
+3. Detectar Secure Boot y firmar el módulo si es necesario
+4. Insertar módulo nuevo
+5. Verificar el archivo de dispositivo
+6. Asegurar permisos adecuados
+7. Ejecutar la app
+8. Limpiar los archivos de compilación del módulo al cerrar la aplicación
 
 ```bash
 sh run_program.sh
 ```
 
 >[!NOTE]
->El script `run_program.sh` compila el módulo, lo carga en el kernel y ejecuta la aplicación de espacio de usuario. Verificando que el módulo se haya cargado correctamente con `lsmod` y que el dispositivo esté presente en `/dev/`. Tambien verifica el estado del secure boot, ya que este puede impedir la carga de módulos no firmados.
+>Para insertar el módulo con Secure Boot activado, es necesario primero insertar una llave privada y publica propia, con nombre `MOK.priv` y `MOK.der` en el directorio `SdC/TP5/CDD`.
 
-3. Se ejecuta la aplicación de espacio de usuario, que se encarga de leer y graficar las señales.
+Después de ejecutar el script por primera vez, se recomienda iniciar la aplicación directamente en las siguientes ocasiones para agilizar el proceso.
 
 ```bash
 cd user
