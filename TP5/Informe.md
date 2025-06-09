@@ -89,7 +89,8 @@ Se desarrolló un Character Device Driver (CDD) que genera dos señales periódi
 
 Las correcciones de escalas de las mediciones, se realizan a nivel de usuario. Los gráficos de la señal indican el tipo de señal que se está sensando, con unidades en abscisas y tiempo en ordenadas. Cuando se cambia de señal el gráfico se "resetea" y acomoda a la nueva medición.
 
-La idea original de este trabajo era sensar señales de pines GPIO. Para ello se trató de emular una Raspberry Pi en QEMU, sin embargo esto no dio resultado, por lo que se optó por desarrollar un CDD que genere las señales.
+>[!NOTE]
+>La idea original de este trabajo era sensar señales de pines GPIO. Para ello se trató de emular una Raspberry Pi en QEMU, sin embargo esto no dio resultado, por lo que se optó por desarrollar un CDD que genere las señales.
 
 #### Paso 1: Estructura básica del módulo
 
