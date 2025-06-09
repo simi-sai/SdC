@@ -113,14 +113,58 @@ Para registrar el driver como un dispositivo de carácter:
 
 #### Paso 3: Personalización y Extensión del Módulo
 
-Las modificaciones específicas realizadas incluyen:
+Las modificaciones específicas realizadas en el archivo `CDD/signal_driver.c` incluyen:
 
-- Generación de dos señales periódicas (cuadrada y triangular) utilizando temporizadores del kernel (`hrtimer` o `timer_list`).
-- Implementación de un mecanismo para seleccionar la señal a sensar mediante una llamada `ioctl` desde espacio de usuario.
-- Sincronización del acceso a las señales usando mecanismos como `wait_queue` o semáforos para evitar condiciones de carrera.
-- Adaptación de la función `read` para entregar muestras de la señal seleccionada en intervalos de 1 segundo.
-- Manejo de cambios de señal, reiniciando el estado interno y notificando a la aplicación usuaria para que reinicie el gráfico.
+- Implementación de dos generadores de señal (cuadrada y triangular) usando la estructura `struct timer_list` para temporización periódica.
+- Definición de una variable global para seleccionar la señal activa, modificable desde espacio de usuario mediante la función `ioctl`.
+- Uso de una cola de espera (`wait_queue_head_t`) para sincronizar la entrega de muestras y evitar condiciones de carrera entre el temporizador y la función `read`.
+- Adaptación de la función `read` para que devuelva un byte correspondiente a la muestra más reciente de la señal seleccionada, bloqueando hasta que haya una nueva muestra disponible.
+- Reinicio del estado interno de la señal y notificación a la aplicación usuaria mediante la cola de espera cuando se cambia la señal seleccionada con `ioctl`.
 
+#### Paso 4: Implementación de la Aplicación de Espacio de Usuario
+
+La aplicación de espacio de usuario se encarga de:
+
+- Abrir el dispositivo de carácter creado por el driver.
+- Leer los datos de la señal seleccionada mediante llamadas al sistema.
+- Graficar los datos recibidos utilizando una biblioteca de gráficos (como `matplotlib` en Python).
+- Permitir al usuario seleccionar entre las dos señales disponibles (cuadrada o triangular) y actualizar el gráfico en consecuencia.
+
+#### Paso 5: Pruebas y Verificación
+
+Para verificar el correcto funcionamiento del driver y la aplicación:
+
+1. Se compila el módulo del kernel:
+
+Para realizar este paso, se debe ejecutar primero el Makefile:
+
+```bash
+cd CDD
+make
+cd ..
+```
+
+2. Se carga el módulo en el kernel con nuestro script:
+
+```bash
+sh run_program.sh
+```
+
+>[!NOTE]
+>El script `run_program.sh` compila el módulo, lo carga en el kernel y ejecuta la aplicación de espacio de usuario. Verificando que el módulo se haya cargado correctamente con `lsmod` y que el dispositivo esté presente en `/dev/`. Tambien verifica el estado del secure boot, ya que este puede impedir la carga de módulos no firmados.
+
+3. Se ejecuta la aplicación de espacio de usuario, que se encarga de leer y graficar las señales.
+
+```bash
+cd user
+python3 app.py
+```
+
+#### Paso 6: Visualización de Resultados
+
+<div class="image" align="center">
+    <img src="Imagenes/demostracion.gif"/>
+</div>
 
 ## Conclusion
 
