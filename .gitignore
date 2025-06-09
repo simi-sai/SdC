@@ -6,5 +6,15 @@ __pycache__
 *.so
 *.inc
 TP3/protected-mode-sdc/*
+
+# Llaves
 MOK.der
 MOK.priv
+
+# Archivos de compilacion de modulos de kernel
+*.cmd
+*.symvers
+*.order
+*.mod
+*.mod.c
+*.ko
