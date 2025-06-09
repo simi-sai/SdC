@@ -47,7 +47,7 @@ static int signal_loop(void *data)
     if (triangle_signal >= 10 || triangle_signal <= 0)
       direction *= -1;
 
-    msleep(1000); // Espera de 1 segundo
+    msleep(3000); // Espera de 1 segundo
   }
   return 0;
 }
@@ -117,6 +117,12 @@ static int __init signal_init(void)
   if (alloc_chrdev_region(&dev_num, 0, 1, DEVICE_NAME) < 0)
     return -1;
 
+    if (IS_ERR(cl = class_create("chardrv")))
+  {
+    unregister_chrdev_region(dev_num, 1);
+    return PTR_ERR(cl);
+  }
+    
   if (IS_ERR(device_create(cl, NULL, dev_num, NULL, DEVICE_NAME)))
   {
     class_destroy(cl);

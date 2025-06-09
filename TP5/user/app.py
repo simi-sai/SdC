@@ -1,48 +1,61 @@
 import time
+import matplotlib.pyplot as plt
 
 DEVICE = "/dev/signal_driver"
 
-# Seleccionar puerto a leer
 def set_signal(idx):
     with open(DEVICE, "wb") as f:
-        # Escritura en el CDD
         f.write(bytes(str(idx), "ascii"))
 
-
-# Leer puerto seleccionado
 def read_sample():
     with open(DEVICE, "r") as f:
         val = f.readline().strip()
     return int(val)
 
-
-# Plot
-def plot_loop():
-    # El usuario decide aquí cuál señal leer (0 o 1):
-    sel = int(
-        input(
-            "¿Leer señal 1 (cuadrada) o 2 (triangular)? Presione Ctrl+C para salir.\n"
-        )
-    )
-    set_signal(sel)
-    ts = 0
-    print(f"Señal a leer: {sel}. Presione Ctrl+C para leer otra señal.")
-
+def graficar_senial():
     while True:
         try:
-            val = read_sample()
-            print(f"Tiempo: {ts}, Valor: {val}")
-            ts += 1
-            time.sleep(1)
+            sel = int(
+                input("¿Leer señal 1 (cuadrada) o 2 (triangular)? Presione Ctrl+C para salir.\n")
+            )
+            if sel not in (1, 2):
+                print("Opción inválida. Elija 1 o 2.")
+                continue
         except KeyboardInterrupt:
-            sel = int(input("¿Leer señal 0 o 1? Presione Ctrl+C para salir.\n"))
-            set_signal(sel)
-            ts = 0
+            print("\nSaliendo...")
+            break
+        except Exception:
+            print("Entrada inválida.")
+            continue
 
+        set_signal(sel)
+        print(f"Señal a leer: {sel}. Presione Ctrl+C para detener y graficar.")
+
+        tiempos = []
+        valores = []
+        ts = 0
+
+        try:
+            while True:
+                val = read_sample()
+                tiempos.append(ts)
+                valores.append(val)
+                print(f"Tiempo: {ts}, Valor: {val}")
+                ts += 1
+                time.sleep(1)  # Tiempo de actualizacion de 1 segundo
+        except KeyboardInterrupt:
+            print("Graficando señal...")
+
+        plt.figure()
+        plt.plot(tiempos, valores, marker='o')
+        plt.title(f"Señal {sel} leída del driver")
+        plt.xlabel("Tiempo (s)")
+        plt.ylabel("Valor")
+        plt.grid(True)
+        plt.show()
 
 def main():
-    plot_loop()
-
+    graficar_senial()
 
 if __name__ == "__main__":
     main()
